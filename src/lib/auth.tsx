@@ -20,23 +20,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<any | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Check for existing token on mount
     const savedToken = localStorage.getItem("auth_token")
-    if (savedToken) {
+    const savedUser = localStorage.getItem("user_data")
+    if (savedToken && savedUser) {
       setToken(savedToken)
       // In a real app, you'd validate the token with your API
       // For now, we'll simulate a user from the token
-      const mockUser = {
-        id: "1",
-        email: "user@example.com",
-        username: "mockUser",
-      }
-      setUser(mockUser)
+      setUser(savedUser)
     }
     setLoading(false)
   }, [])
@@ -54,11 +50,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json()
-        const { token: authToken} = data
-
+        const { token: authToken, user: userData} = data
+console.log(data);
         localStorage.setItem("auth_token", authToken)
+        localStorage.setItem("user_data", userData)
         setToken(authToken)
-        //setUser(userData)
+        setUser(userData)
         return true
       }
       return false

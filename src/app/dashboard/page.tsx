@@ -40,8 +40,6 @@ export default function DashboardPage() {
         logout();
       }
 
-      console.log(data);
-
       setResourcesData(data);
     } catch (error) {
       console.error("Error fetching resources:", error);
@@ -90,7 +88,10 @@ export default function DashboardPage() {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold gradient-text mb-4">🏠 Centro de Comando</h1>
+            <h1 className="text-4xl font-bold gradient-text mb-4 flex items-center justify-center gap-2">
+              <img src="/panel-ant.png" width="75" alt="icono" />
+              Centro de Comando
+            </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Gestiona tu colonia de hormigas desde el corazón del hormiguero
             </p>
@@ -100,12 +101,12 @@ export default function DashboardPage() {
             <Link href="/dashboard/construcciones">
               <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
                 <CardHeader className="text-center">
-                  <div className="text-6xl mb-4">🏗️</div>
+                  <div className="text-6xl mb-4"><img src="/construction-ant.png" /></div>
                   <CardTitle className="text-2xl gradient-text">Construcciones</CardTitle>
                   <CardDescription>Mejora y construye nuevas estructuras para fortalecer tu colonia</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm">
+                  {/*<div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Edificios Activos:</span>
                       <span className="font-bold text-primary">5</span>
@@ -118,7 +119,7 @@ export default function DashboardPage() {
                       <span>Disponibles:</span>
                       <span className="font-bold text-secondary">3</span>
                     </div>
-                  </div>
+                  </div>*/}
                 </CardContent>
               </Card>
             </Link>
@@ -126,12 +127,12 @@ export default function DashboardPage() {
             <Link href="/dashboard/investigaciones">
               <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
                 <CardHeader className="text-center">
-                  <div className="text-6xl mb-4">🔬</div>
+                  <div className="text-6xl mb-4"><img src="/investigation-ant.png"/></div>
                   <CardTitle className="text-2xl gradient-text">Investigaciones</CardTitle>
                   <CardDescription>Desarrolla tecnologías avanzadas para evolucionar tu especie</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm">
+                  {/*<div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Completadas:</span>
                       <span className="font-bold text-primary">2</span>
@@ -144,7 +145,7 @@ export default function DashboardPage() {
                       <span>Disponibles:</span>
                       <span className="font-bold text-secondary">4</span>
                     </div>
-                  </div>
+                  </div>*/}
                 </CardContent>
               </Card>
             </Link>
@@ -152,14 +153,14 @@ export default function DashboardPage() {
             <Link href="/dashboard/ejercito">
               <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
                 <CardHeader className="text-center">
-                  <div className="text-6xl mb-4">⚔️</div>
+                  <div className="text-6xl mb-4"><img src="/special-ants.png"/></div>
                   <CardTitle className="text-2xl gradient-text">Ejército</CardTitle>
                   <CardDescription>
                     Entrena y gestiona diferentes tipos de soldados para defender y atacar
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm">
+                  {/*<div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Soldados Activos:</span>
                       <span className="font-bold text-primary">143</span>
@@ -172,7 +173,7 @@ export default function DashboardPage() {
                       <span>Tipos Disponibles:</span>
                       <span className="font-bold text-secondary">3</span>
                     </div>
-                  </div>
+                  </div>*/}
                 </CardContent>
               </Card>
             </Link>
@@ -180,12 +181,12 @@ export default function DashboardPage() {
             <Link href="/dashboard/misiones">
               <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
                 <CardHeader className="text-center">
-                  <div className="text-6xl mb-4">🌿</div>
+                  <div className="text-6xl mb-4"><img src="/exploration-ant.png"/></div>
                   <CardTitle className="text-2xl gradient-text">Misiones</CardTitle>
                   <CardDescription>Envía obreras a explotar recursos y explorar nuevos territorios</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2 text-sm">
+                  {/*<div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Misiones Activas:</span>
                       <span className="font-bold text-primary">2</span>
@@ -198,7 +199,7 @@ export default function DashboardPage() {
                       <span>Zonas Disponibles:</span>
                       <span className="font-bold text-secondary">5</span>
                     </div>
-                  </div>
+                  </div>*/}
                 </CardContent>
               </Card>
             </Link>
@@ -232,7 +233,7 @@ export default function DashboardPage() {
                 </Link>
               </CardContent>
             </Card>
-          </div>*/}
+          </div>*/} 
         </main>
       </div>
     </ProtectedRoute>
