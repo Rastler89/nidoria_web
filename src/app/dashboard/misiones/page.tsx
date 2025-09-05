@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Stats } from "@/components/stats"
 
-export default function ConstruccionesPage() {
+export default function MisionesPage() {
   const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null)
 
   const gameData = {
@@ -138,7 +138,10 @@ export default function ConstruccionesPage() {
                 ← Volver al Centro de Comando
               </Button>
             </Link>
-            <h1 className="text-4xl font-bold gradient-text mb-2">🏗️ Construcciones</h1>
+            <h1 className="text-4xl font-bold gradient-text mb-4 flex items-center justify-right gap-2">
+              <img src="/exploration-ant.png" width="75" alt="icono" />
+              Misiones
+            </h1>
             <p className="text-xl text-muted-foreground">
               Mejora y construye nuevas estructuras para fortalecer tu colonia
             </p>
