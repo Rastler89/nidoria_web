@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    return NextResponse.json({ token: data.access_token, user: data.user},{status: 200});
+    return NextResponse.json({ token: data.access_token, user: data.user, refreshToken: data.refresh_token},{status: 200});
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

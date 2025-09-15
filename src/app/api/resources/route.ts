@@ -1,10 +1,14 @@
+import { apiFetch } from "@/lib/apiFetch";
 import { NextRequest, NextResponse } from "next/server"
+import { cookies } from 'next/headers'
 
 export async function GET(req: NextRequest) {
+    const cookieStore = cookies()
+    const token = (await cookieStore).get('auth_token')?.value
 
-    const token = req.headers.get("authorization")?.split(" ")[1];
+    console.log(token);
 
-    const res = await fetch("http://localhost:4000/resources", {
+    const res = await apiFetch("resources", {
         headers: {
         "Authorization": `Bearer ${token ?? ""}`,
         },

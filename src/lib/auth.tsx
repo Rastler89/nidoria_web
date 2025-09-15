@@ -1,5 +1,6 @@
 "use client"
 
+import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
 interface User {
@@ -11,6 +12,8 @@ interface User {
 interface AuthContextType {
   user: User | null
   token: string | null
+  refreshToken?: string | null
+  refresh: () => Promise<void>
   login: (email: string, password: string) => Promise<boolean>
   register: (email: string, username: string, password: string) => Promise<boolean>
   logout: () => void
@@ -23,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<any | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshToken, setRefreshToken] = useState<string | null>(null)
 
   useEffect(() => {
     // Check for existing token on mount
@@ -50,12 +54,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json()
-        const { token: authToken, user: userData} = data
-console.log(data);
+        const { token: authToken, user: userData, refreshToken: refreshToken} = data
+
         localStorage.setItem("auth_token", authToken)
         localStorage.setItem("user_data", userData)
+        localStorage.setItem("refresh_token", refreshToken)
+
+        Cookies.set("auth_token", authToken);
+        Cookies.set("user_data", userData);
+        Cookies.set("refresh_token", refreshToken);
+
         setToken(authToken)
         setUser(userData)
+        setRefreshToken(refreshToken)
         return true
       }
       return false
@@ -92,14 +103,43 @@ console.log(data);
     }
   }
 
+  const refresh = async () => {
+    try {
+      if (!refreshToken) return
+
+      const response = await fetch("/api/auth/refresh", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const { token: newToken } = data
+        localStorage.setItem("auth_token", newToken)
+        setToken(newToken)
+      } else {
+        logout()
+      }
+    } catch (error) {
+      console.error("Refresh token error:", error)
+      logout()
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem("auth_token")
+    localStorage.removeItem("user_data")
+    localStorage.removeItem("refresh_token")
     setToken(null)
+    setRefreshToken(null)
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, token, refreshToken, refresh, login, register, logout, loading }}>{children}</AuthContext.Provider>
   )
 }
 
