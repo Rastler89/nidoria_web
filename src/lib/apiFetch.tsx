@@ -1,4 +1,6 @@
 import { cookies } from 'next/headers'
+import { useAuth } from './auth';
+import Cookies from "js-cookie";
 
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
@@ -6,7 +8,10 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     const cookieStore = cookies()
     const refreshToken = (await cookieStore).get('refresh_token')?.value
 
-console.log(refreshToken);
+    if (refreshToken == undefined) {
+        throw new Error("Unauthorized");
+    }
+
     //servidor
     let res = await fetch(`http://localhost:4000/${url}`, options);
 
@@ -17,10 +22,16 @@ console.log(refreshToken);
             body: JSON.stringify({ refresh_token: refreshToken }),
         });
 
-        if (!refreshRes.ok) {
+
+        if(refreshRes.status === 401) {
             throw new Error("Unauthorized");
+        } else {
+            const refreshData = await refreshRes.json();
+            cookieStore.set('auth_token', refreshData['token']);
         }
+
         //servidor
+
         res = await fetch(`http://localhost:4000/${url}`, options);
     }
 

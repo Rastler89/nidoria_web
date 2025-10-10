@@ -18,6 +18,42 @@ export default function MisionesPage() {
     leaves: 0,
   })
 
+  const misiones = [
+    {
+        id: 1,
+        resource: "food",
+        name: "Recolección de Néctar",
+        icon: "🍯",
+        description: "Las obreras recolectan néctar de flores cercanas",
+        efficiency: 2.5,
+        workersAssigned: 77,
+        production: 192,
+        timeRemaining: "2h 15m",
+      },
+      {
+        id: 2,
+        resource: "wood",
+        name: "Tala de Ramas",
+        icon: "🪵",
+        description: "Cortar y transportar pequeñas ramas para construcción",
+        efficiency: 1.8,
+        workersAssigned: 0,
+        production: 0,
+        timeRemaining: null,
+      },
+      {
+        id: 3,
+        resource: "leaves",
+        name: "Cosecha de Hojas",
+        icon: "🍃",
+        description: "Recolectar hojas frescas para cultivo de hongos",
+        efficiency: 3.2,
+        workersAssigned: 0,
+        production: 0,
+        timeRemaining: null,
+      },
+  ]
+
   const totalAssignedWorkers = Object.values(assignments).reduce((sum,val) => sum + val, 0);
   const remainingWorkers = (data?.ants ?? 0) - totalAssignedWorkers - (data?.busy_ants ?? 0);
 
@@ -54,51 +90,62 @@ export default function MisionesPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 rounded-lg bg-primary/20">
                   <div className="text-3xl font-bold text-primary">{remainingWorkers}</div>
+                  <div className="text-sm text-muted-foreground">Obreras libres</div>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-accent/20">
+                  <div className="text-3xl font-bold text-accent">{totalAssignedWorkers}</div>
+                  <div className="text-sm text-muted-foreground">Por asignar</div>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-secondary/20">
+                  <div className="text-3xl font-bold text-secondary">
+                    {data?.busy_ants ?? 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Trabajando</div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-3 xl:grid-cols-3 gap-6">
-            <Card className="game-panel tech-node p-6 cursor-pointer transition-all">
-              <CardHeader>
-                <CardTitle className="text-2xl gradient-text">
-                  <h1>
-                    <img src="/food_resource.png" width="50" alt="icono" className="inline-block mr-2" />
-                    Recolectar comida
-                  </h1>
-                </CardTitle>
-                <CardDescription>
-                  
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                
-              </CardContent>
-            </Card>
-            <Card className="game-panel tech-node p-6 cursor-pointer transition-all">
-              <CardHeader>
-                <CardTitle className="text-2xl gradient-text">
-                  <h1>
-                    <img src="/wood_resource.png" width="50" alt="icono" className="inline-block mr-2" />
-                    Recolectar madera
-                  </h1>
-                </CardTitle>
-                <CardDescription>missatges</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                contingut
-              </CardContent>
-            </Card>
-            <Card className="game-panel tech-node p-6 cursor-pointer transition-all">
-              <CardHeader>
-                <CardTitle className="text-2xl gradient-text">Titulo</CardTitle>
-                <CardDescription>missatges</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                contingut
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {misiones.map((mision) => (
+              <Card key={mision.id} className="game-panel">
+                <CardHeader className="text-center">
+                  <div className="text-6xl mb-4">{mision.icon}</div>
+                  <CardTitle className="text-xl gradient-text">{mision.name}</CardTitle>
+                  <CardDescription>{mision.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Eficiencia: </span>
+                      <span className="font-bold text-primary">{mision.efficiency}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Obreras Asignadas:</span>
+                      <span className="font-bold text-accent">{mision.workersAssigned}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Producción/hora: </span>
+                      <span className="font-bold text-secondary">{mision.production}</span>
+                    </div>
+                    {mision.timeRemaining && (
+                      <div className="flex justify-between text-sm">
+                        <span>Tiempo restante:</span>
+                        <span className="font-bold text-primary">{mision.timeRemaining}</span>
+                      </div>
+                    )}
+                  </div>
+                  {mision.workersAssigned > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Progreso</span>
+                        <span>75%</span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </main>
       </div>
