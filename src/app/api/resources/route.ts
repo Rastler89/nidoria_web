@@ -6,8 +6,6 @@ export async function GET(req: NextRequest) {
     const cookieStore = cookies()
     const token = (await cookieStore).get('auth_token')?.value
 
-    console.log(token);
-
     const res = await apiFetch("resources", {
         headers: {
         "Authorization": `Bearer ${token ?? ""}`,
