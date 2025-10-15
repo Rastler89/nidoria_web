@@ -81,8 +81,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden morphing-bg">
-      <div className="ant-particles">
+    <div className="max-h-screen relative overflow-hidden morphing-bg">
+      {/*<div className="ant-particles">
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
@@ -96,7 +96,7 @@ export default function RegisterPage() {
             }}
           />
         ))}
-      </div>
+      </div>*/}
 
       <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-background/5 to-primary/25">
         <div className="absolute inset-0 bg-[url('/ant-workers-carrying-food-teamwork.png')] bg-cover bg-center opacity-8"></div>
@@ -109,9 +109,6 @@ export default function RegisterPage() {
               <svg className="w-14 h-14 text-primary" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L8 8h8l-4-6zm0 20l4-6H8l4 6zm-6-8L2 12l4-2v4zm12 0v-4l4 2-4 2z" />
               </svg>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center glass-card">
-                <span className="text-sm font-bold text-secondary-foreground">+</span>
-              </div>
             </div>
             <h1 className="text-6xl font-bold gradient-text mb-6 text-balance">
               Únete a <span className="text-secondary">Nidoria</span>
