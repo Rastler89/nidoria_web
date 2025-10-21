@@ -11,7 +11,7 @@ export function Navigation() {
   const { user, logout } = useAuth()
 
   const isActive = (path: string) => pathname === path
-console.log(user);
+
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

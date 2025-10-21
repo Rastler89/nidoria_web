@@ -12,9 +12,13 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
         throw new Error("Unauthorized");
     }
 
-    //servidor
-    let res = await fetch(`http://localhost:4000/${url}`, options);
+    let currentOptions: RequestInit = {
+        ...options,
+        body: options.body ? String(options.body) : undefined
+    };
 
+    //servidor
+    let res = await fetch(`http://localhost:4000/${url}`, currentOptions);
     if (res.status === 401) {
         //local (control propio)
         const refreshRes = await fetch("http://localhost:3000/api/auth/refresh", {
@@ -31,8 +35,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
         }
 
         //servidor
-
-        res = await fetch(`http://localhost:4000/${url}`, options);
+        res = await fetch(`http://localhost:4000/${url}`, currentOptions);
     }
 
     return res;

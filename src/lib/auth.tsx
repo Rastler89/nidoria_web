@@ -56,10 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await response.json()
         const { token: authToken, user: userData, refreshToken: refreshToken} = data
 
-        localStorage.setItem("auth_token", authToken)
-        localStorage.setItem("user_data", userData)
-        localStorage.setItem("refresh_token", refreshToken)
-
         Cookies.set("auth_token", authToken);
         Cookies.set("user_data", userData);
         Cookies.set("refresh_token", refreshToken);
@@ -89,11 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json()
-        const { token: authToken, user: userData } = data
+        const { token: authToken, user: userData, refreshToken: refreshToken} = data
 
-        localStorage.setItem("auth_token", authToken)
+        Cookies.set("auth_token", authToken);
+        Cookies.set("user_data", userData);
+        Cookies.set("refresh_token", refreshToken);
         setToken(authToken)
         setUser(userData)
+        setRefreshToken(refreshToken)
         return true
       }
       return false
@@ -118,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json()
         const { token: newToken } = data
-        localStorage.setItem("auth_token", newToken)
+        Cookies.set("auth_token", token);
         setToken(newToken)
       } else {
         logout()

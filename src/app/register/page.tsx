@@ -60,7 +60,6 @@ export default function RegisterPage() {
     setIsLoading(true)
     try {
       const success = await register(formData.email, formData.username, formData.password)
-      console.log(success)
       if (success) {
         router.push("/dashboard")
       } else {

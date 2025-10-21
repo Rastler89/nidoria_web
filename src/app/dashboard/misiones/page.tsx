@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Stats } from "@/components/stats"
 import { useResources } from "@/lib/useResources"
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input"
 
 export default function MisionesPage() {
   const { data, error, isLoading } = useResources();
@@ -22,6 +24,7 @@ export default function MisionesPage() {
     {
         id: 1,
         resource: "food",
+        type: 'F',
         name: "Recolección de Néctar",
         icon: "🍯",
         description: "Las obreras recolectan néctar de flores cercanas",
@@ -33,6 +36,7 @@ export default function MisionesPage() {
       {
         id: 2,
         resource: "wood",
+        type: 'W',
         name: "Tala de Ramas",
         icon: "🪵",
         description: "Cortar y transportar pequeñas ramas para construcción",
@@ -44,6 +48,7 @@ export default function MisionesPage() {
       {
         id: 3,
         resource: "leaves",
+        type: 'L',
         name: "Cosecha de Hojas",
         icon: "🍃",
         description: "Recolectar hojas frescas para cultivo de hongos",
@@ -54,8 +59,31 @@ export default function MisionesPage() {
       },
   ]
 
+  const handleAssignWorkers = (resource: string, amount: number) => {
+      if (amount <= data?.ants) {
+          setAssignments((prev) => ({
+              ...prev,
+              [resource]: amount,
+          }))
+      } else {
+          console.log('hora')
+      }
+  }
+
   const totalAssignedWorkers = Object.values(assignments).reduce((sum,val) => sum + val, 0);
-  const remainingWorkers = (data?.ants ?? 0) - totalAssignedWorkers - (data?.busy_ants ?? 0);
+  const assignableWorkers = (data?.ants ?? 0) - (data?.busy_ants ?? 0);
+  const remainingWorkers = assignableWorkers - totalAssignedWorkers;
+
+  const handleSubmit = async (resource: string, amount: number) => {
+      console.log(resource, amount);
+      const response = await fetch("/api/misiones", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ resource: resource, amount: amount }),
+      })
+  }
 
   return (
     <ProtectedRoute>
@@ -141,8 +169,35 @@ export default function MisionesPage() {
                         <span>Progreso</span>
                         <span>75%</span>
                       </div>
+                        <Progress value={75} className="h-2" />
                     </div>
                   )}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium">Asignar Obreras:</label>
+                    <div className="flex gap-2">
+                        <Input
+                            type="number"
+                            min="0"
+                            max={assignableWorkers}
+                            value={assignments[mision.resource as keyof typeof assignments]}
+                            onChange={(e) => handleAssignWorkers(mision.resource, Number.parseInt(e.target.value) || 0)}
+                            className="flex-1"
+                            placeholder="0"
+                            disabled={remainingWorkers <= 0 && assignments[mision.resource as keyof typeof assignments] === 0}
+                        />
+                        <Button
+                            className="interactive-button"
+                            disabled={assignments[mision.resource as keyof typeof assignments] === 0}
+                            onClick={() => handleSubmit(mision.type, assignments[mision.resource as keyof typeof assignments])}
+                        >
+                            Enviar
+                        </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                        Producción estimada:{" "}
+                        {(assignments[mision.resource as keyof typeof assignments] * mision.efficiency).toFixed(1)}/hora
+                    </div>
+                </div>
                 </CardContent>
               </Card>
             ))}

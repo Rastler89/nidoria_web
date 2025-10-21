@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="9003cdad-43e2-4c2c-ab35-ae7cb99d5a1e" name="Changes" comment="" />
+    <list default="true" id="0688fc7f-6d27-489e-89b5-dd0f6ab614af" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/api/misiones/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/progress.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/dashboard/misiones/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/dashboard/misiones/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/register/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/register/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/apiFetch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/apiFetch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/useResources.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/useResources.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,30 +25,51 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
-  <component name="ProjectId" id="33uRa9jJf9Ep9AzvlHzDfR7e5nB" />
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Rastler89&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Rastler89/nidoria_web.git&quot;,
+    &quot;accountId&quot;: &quot;083f903c-1bc3-40d3-bfd0-c7add00b1a56&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="34IUtZRGOzrNC80cC4bSfHiAhgw" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JavaScript Debug.Next.js: debug client-side.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/Rastl/Desktop/rastprojects/nidoria_web",
+    "last_opened_file_path": "C:/Users/Rastl/Desktop/nidoria-web",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "npm.dev.executor": "Run",
     "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "C:\\Users\\Rastl\\Desktop\\nidoria-web\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="npm.Next.js: server-side">
+  <component name="RunManager" selected="npm.dev">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
     </configuration>
@@ -47,6 +83,21 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="JavaScript Debug.Next.js: debug client-side" />
+      <item itemvalue="npm.dev" />
+      <item itemvalue="npm.Next.js: server-side" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -57,13 +108,20 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="9003cdad-43e2-4c2c-ab35-ae7cb99d5a1e" name="Changes" comment="" />
-      <created>1760165031790</created>
+      <changelist id="0688fc7f-6d27-489e-89b5-dd0f6ab614af" name="Changes" comment="" />
+      <created>1760900794927</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1760165031790</updated>
-      <workItem from="1760165033100" duration="5000" />
+      <updated>1760900794927</updated>
+      <workItem from="1760900796652" duration="4002000" />
+      <workItem from="1760944186185" duration="8446000" />
+      <workItem from="1760981852495" duration="1360000" />
+      <workItem from="1761022035549" duration="2316000" />
+      <workItem from="1761054960115" duration="5251000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>
