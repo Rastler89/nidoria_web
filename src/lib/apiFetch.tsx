@@ -31,7 +31,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
             throw new Error("Unauthorized");
         } else {
             const refreshData = await refreshRes.json();
-            cookieStore.set('auth_token', refreshData['token']);
+            (await cookieStore).set('auth_token', refreshData['token']);
         }
 
         //servidor

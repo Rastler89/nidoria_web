@@ -17,7 +17,7 @@ export function Stats() {
     };
 
     const getResourceStock = (type: string) => {
-        return data?.resources?.find(r => r.type === type)?.stock ?? "--";
+        return data?.resources?.find((r: { type: string; }) => r.type === type)?.stock ?? "--";
     }
 
     return <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 border border-primary/30 glow-effect">

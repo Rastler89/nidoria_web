@@ -56,9 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await response.json()
         const { token: authToken, user: userData, refreshToken: refreshToken} = data
 
-        Cookies.set("auth_token", authToken);
-        Cookies.set("user_data", userData);
-        Cookies.set("refresh_token", refreshToken);
+        Cookies.set("auth_token", authToken)
+        Cookies.set("user_data", JSON.stringify(userData))
+        Cookies.set("refresh_token", String(refreshToken))
 
         setToken(authToken)
         setUser(userData)
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json()
         const { token: newToken } = data
-        Cookies.set("auth_token", token);
+        Cookies.set("auth_token", newToken)
         setToken(newToken)
       } else {
         logout()
