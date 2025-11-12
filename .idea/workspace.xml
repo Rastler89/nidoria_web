@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="0688fc7f-6d27-489e-89b5-dd0f6ab614af" name="Changes" comment="">
+=======
+    <list default="true" id="9003cdad-43e2-4c2c-ab35-ae7cb99d5a1e" name="Changes" comment="">
+>>>>>>> Stashed changes
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,6 +27,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
+<<<<<<< Updated upstream
     &quot;url&quot;: &quot;https://github.com/Rastler89/nidoria_web.git&quot;,
     &quot;accountId&quot;: &quot;083f903c-1bc3-40d3-bfd0-c7add00b1a56&quot;
   }
@@ -31,22 +36,39 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="34IUtZRGOzrNC80cC4bSfHiAhgw" />
+=======
+    &quot;url&quot;: &quot;https://github.com/rastler89/nidoria_web.git&quot;,
+    &quot;accountId&quot;: &quot;7c544efe-f397-4d7f-acaa-a0acd0690f15&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="33uRa9jJf9Ep9AzvlHzDfR7e5nB" />
+>>>>>>> Stashed changes
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+<<<<<<< Updated upstream
     &quot;JavaScript Debug.Next.js: debug client-side.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+=======
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+>>>>>>> Stashed changes
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
     &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+<<<<<<< Updated upstream
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Rastl/Desktop/nidoria-web&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -60,6 +82,16 @@
   }
 }</component>
   <component name="RunManager" selected="npm.dev">
+=======
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Rastl/Desktop/rastprojects/nidoria_web&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="npm.Next.js: server-side">
+>>>>>>> Stashed changes
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
     </configuration>
@@ -102,6 +134,7 @@
       <created>1760900794927</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+<<<<<<< Updated upstream
       <updated>1760900794927</updated>
       <workItem from="1760900796652" duration="4002000" />
       <workItem from="1760944186185" duration="8446000" />
@@ -112,6 +145,13 @@
       <workItem from="1761494222286" duration="725000" />
       <workItem from="1761587429425" duration="594000" />
       <workItem from="1762010449285" duration="609000" />
+=======
+      <updated>1760165031790</updated>
+      <workItem from="1760165033100" duration="5000" />
+      <workItem from="1761160505955" duration="260000" />
+      <workItem from="1761160834681" duration="76000" />
+      <workItem from="1761161117684" duration="24000" />
+>>>>>>> Stashed changes
     </task>
     <servers />
   </component>

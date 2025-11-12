@@ -1,0 +1,23 @@
+name: Enforce Production PR Source
+
+# Este workflow se ejecuta cuando hay actividad en un Pull Request
+on:
+  pull_request:
+    # Solo cuando el PR va dirigido a la rama 'production'
+    branches:
+      - production
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check_source_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that source branch is 'develop'
+        # Usamos una condición 'if' para verificar la rama de origen (head_ref)
+        # y la rama de destino (base_ref)
+        if: ${{ github.base_ref == 'production' && github.head_ref != 'develop' }}
+        run: |
+          echo "::error::🚨 MERGE BLOQUEADO: Solo se permite fusionar la rama 'develop' en 'production'."
+          echo "La rama de origen actual es: ${{ github.head_ref }}"
+          echo "Por favor, crea tu Pull Request desde 'develop'."
+          exit 1
