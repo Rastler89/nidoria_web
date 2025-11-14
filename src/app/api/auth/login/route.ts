@@ -4,7 +4,9 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
 
-    const res = await fetch("http://localhost:4000/auth/login", {
+    const url = process.env.DB_HOST+"/auth/login";
+console.log(url);
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
