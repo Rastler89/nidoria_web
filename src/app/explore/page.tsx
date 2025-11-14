@@ -65,7 +65,7 @@ export default function ExplorePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <Link href="/register">Únete a Discord</Link>
+                <Link href="https://discord.gg/cd5GDqJC" target="_blank">Únete a Discord</Link>
               </Button>
             </div>
           </div>
