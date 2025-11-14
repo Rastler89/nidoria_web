@@ -8,6 +8,9 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     const cookieStore = cookies()
     const refreshToken = (await cookieStore).get('refresh_token')?.value
 
+    const dbHost = process.env.DB_HOST;
+    const local = process.env.NEXT_PUBLIC_API_URL;
+
     if (refreshToken == undefined) {
         throw new Error("Unauthorized");
     }
@@ -18,10 +21,10 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     };
 
     //servidor
-    let res = await fetch(`http://localhost:4000/${url}`, currentOptions);
+    let res = await fetch(`${dbHost}/${url}`, currentOptions);
     if (res.status === 401) {
         //local (control propio)
-        const refreshRes = await fetch("http://localhost:3000/api/auth/refresh", {
+        const refreshRes = await fetch(local+"/api/auth/refresh", {
             method: "POST",
             body: JSON.stringify({ refresh_token: refreshToken }),
         });
@@ -35,7 +38,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
         }
 
         //servidor
-        res = await fetch(`http://localhost:4000/${url}`, currentOptions);
+        res = await fetch(`${dbHost}/${url}`, currentOptions);
     }
 
     return res;
