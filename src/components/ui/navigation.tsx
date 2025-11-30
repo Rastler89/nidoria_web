@@ -36,7 +36,7 @@ export function Navigation() {
               Explorar
             </Link>
 
-            {/*user ? (
+            {user ? (
               <div className="flex items-center gap-4">
                 <Link
                   href="/dashboard"
@@ -63,7 +63,7 @@ export function Navigation() {
                   <Link href="/register">Registrarse</Link>
                 </Button>
               </div>
-            )*/}
+            )}
           </div>
         </div>
       </div>

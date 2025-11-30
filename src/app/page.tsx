@@ -22,7 +22,7 @@ export default function HomePage() {
               </div>
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance">
-              Construye tu
+              Construye tu{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Colonia en Nidoria
               </span>
@@ -63,7 +63,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
+        {/* Más adelante haremos que saque datos reales de la base de datos 
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary/5 to-accent/5 colony-pattern">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-foreground mb-8">La Comunidad de Nidoria</h2>
@@ -86,7 +86,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </section>
+        </section>*/}
 
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
@@ -169,7 +169,7 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-
+                {/*
                 <div className="flex items-start gap-4">
                   <div className="p-2 rounded-lg bg-accent/10 mt-1">
                     <NidoriaIcon className="text-accent" size={24} />
@@ -180,7 +180,7 @@ export default function HomePage() {
                       Cada hormiga tiene comportamientos únicos y toma decisiones inteligentes basadas en la situación.
                     </p>
                   </div>
-                </div>
+                </div>*/}
 
                 <div className="flex items-start gap-4">
                   <div className="p-2 rounded-lg bg-primary/10 mt-1">
