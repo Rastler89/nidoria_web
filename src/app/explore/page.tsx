@@ -6,32 +6,6 @@ import { AntIcon } from "@/components/ui/ant-icon"
 import Link from "next/link"
 
 export default function ExplorePage() {
-  const terrains = [
-    {
-      name: "Claro del Bosque",
-      description: "Bosque denso con suelo rico y abundantes fuentes de alimento",
-      difficulty: "Principiante",
-      players: "2-8",
-      features: ["Recursos Abundantes", "Refugio Natural", "Amenazas Moderadas"],
-      color: "bg-green-500/10 text-green-700 dark:text-green-400",
-    },
-    {
-      name: "Oasis del Desierto",
-      description: "Ambiente desértico hostil con agua escasa y temperaturas extremas",
-      difficulty: "Avanzado",
-      players: "4-12",
-      features: ["Escasez de Agua", "Calor Extremo", "Minerales Raros"],
-      color: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-    },
-    {
-      name: "Valle de Montaña",
-      description: "Terreno de gran altitud con superficies rocosas y cambios estacionales",
-      difficulty: "Experto",
-      players: "6-16",
-      features: ["Ventaja de Elevación", "Clima Estacional", "Posiciones Estratégicas"],
-      color: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
-    },
-  ]
 
   const antTypes = [
     {
@@ -78,48 +52,22 @@ export default function ExplorePage() {
           </p>
         </div>
 
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Terrenos de Batalla</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Cada terreno ofrece desafíos únicos y oportunidades estratégicas. Domínalos todos para convertirte en el
-              comandante de colonia definitivo.
+        <section className="text-center py-12 bg-muted/30 rounded-lg">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-foreground mb-4">¡Estamos en desarrollo!</h2>
+            <p className="text-muted-foreground mb-6">
+              La aventura en Nidoria está a punto de comenzar.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {terrains.map((terrain, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <CardTitle className="text-xl">{terrain.name}</CardTitle>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${terrain.color}`}>
-                      {terrain.difficulty}
-                    </span>
-                  </div>
-                  <CardDescription>{terrain.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Jugadores:</span>
-                    <span className="font-medium">{terrain.players}</span>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Características Clave:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {terrain.features.map((feature, featureIndex) => (
-                        <span
-                          key={featureIndex}
-                          className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-xs"
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            <p className="text-muted-foreground mb-6">
+              Sé parte de nuestro sueño y ayúdanos a construir la mejor experiencia.
+              <br />
+              Únete a nuestra comunidad en Discord para estar al tanto de las últimas novedades y participar en la evolución de Nidoria.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild>
+                <Link href="https://discord.gg/cd5GDqJC" target="_blank">Únete a Discord</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -225,7 +173,7 @@ export default function ExplorePage() {
           </div>
         </section>
 
-        <section className="text-center py-12 bg-muted/30 rounded-lg">
+        {/*<section className="text-center py-12 bg-muted/30 rounded-lg">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold text-foreground mb-4">¿Listo para Construir tu Imperio?</h2>
             <p className="text-muted-foreground mb-6">
@@ -241,7 +189,7 @@ export default function ExplorePage() {
               </Button>
             </div>
           </div>
-        </section>
+        </section>*/}
       </main>
     </div>
   )

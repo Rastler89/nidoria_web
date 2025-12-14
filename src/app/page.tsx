@@ -22,7 +22,7 @@ export default function HomePage() {
               </div>
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance">
-              Construye tu{" "}
+              Construye tu
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Colonia en Nidoria
               </span>
@@ -46,10 +46,10 @@ export default function HomePage() {
                   <Link href="/dashboard">Entrar a tu Colonia</Link>
                 </Button>
               ) : (
-                <>
+                <>{/*}
                   <Button size="lg" className="text-lg px-8 py-4 rounded-xl" asChild>
                     <Link href="/register">Crear tu Colonia</Link>
-                  </Button>
+                  </Button>*/}
                   <Button
                     size="lg"
                     variant="outline"
