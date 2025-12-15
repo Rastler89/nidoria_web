@@ -28,7 +28,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
-              Únete a miles de jugadores en la simulación de colonias de hormigas más avanzada. Construye túneles,
+              Únete . a miles de jugadores en la simulación de colonias de hormigas más avanzada. Construye túneles,
               gestiona trabajadoras y domina en batallas épicas entre colonias.
             </p>
 

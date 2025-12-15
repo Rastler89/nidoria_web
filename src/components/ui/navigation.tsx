@@ -36,6 +36,18 @@ export function Navigation() {
               Explorar
             </Link>
 
+            <Link
+              href="/wiki"
+              className={cn(
+                "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
+                pathname.startsWith("/wiki")
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
+              )}
+            >
+              Wiki
+            </Link>
+
             {/*user ? (
               <div className="flex items-center gap-4">
                 <Link
