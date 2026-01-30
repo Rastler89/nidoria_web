@@ -3,9 +3,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 :root {
@@ -119,6 +125,7 @@ button {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -220,6 +227,7 @@ button {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -262,6 +270,7 @@ button {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -347,6 +356,7 @@ button {
   from {
     box-shadow: 0 0 20px rgba(132, 204, 22, 0.4);
   }
+
   to {
     box-shadow: 0 0 30px rgba(132, 204, 22, 0.7);
   }

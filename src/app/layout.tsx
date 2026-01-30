@@ -26,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+      </style>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
         <Suspense>
           <AuthProvider>{children}</AuthProvider>

@@ -17,19 +17,18 @@ export default function HomePage() {
         <section className="relative py-20 px-4 sm:px-6 lg:px-8 hero-gradient ant-texture">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-sm">
-                <NidoriaIcon className="text-primary" size={80} />
+              <div className=" rounded-2xl backdrop-blur-sm">
+                <img src="/nidoria.png" alt="Nidoria" className="mx-auto max-w-2xl w-full" />
+                {/*<NidoriaIcon className="text-primary" size={80} />*/}
               </div>
             </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 text-balance">
-              Construye tu
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Colonia en Nidoria
+                Forja tu imperio subterraneo
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
-              Únete . a miles de jugadores en la simulación de colonias de hormigas más avanzada. Construye túneles,
-              gestiona trabajadoras y domina en batallas épicas entre colonias.
+              El universo subterráneo te aguarda. Gestiona recursos, muta tu especie y conquista el hormiguero en este RTS de estrategia persistente.
             </p>
 
             <div className="mb-8">
