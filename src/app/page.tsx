@@ -18,7 +18,7 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
               <div className=" rounded-2xl backdrop-blur-sm">
-                <img src="/nidoria.png" alt="Nidoria" className="mx-auto max-w-2xl w-full" />
+                <img src="/nidoria2.png" alt="Nidoria" className="mx-auto max-w-2xl w-full" />
                 {/*<NidoriaIcon className="text-primary" size={80} />*/}
               </div>
             </div>
