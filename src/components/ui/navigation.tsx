@@ -68,11 +68,8 @@ export function Navigation() {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" className="rounded-xl" asChild>
-                  <Link href="/login">Iniciar Sesión</Link>
-                </Button>
-                <Button size="sm" className="rounded-xl" asChild>
-                  <Link href="/register">Registrarse</Link>
+                <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                  <Link href="/register">Pre-regístrate</Link>
                 </Button>
               </div>
             )}

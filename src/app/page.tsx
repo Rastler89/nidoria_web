@@ -40,19 +40,19 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
+              {process.env.LOGIN_ENABLED === "true" && user ? (
                 <Button size="lg" className="text-lg px-8 py-4 rounded-xl" asChild>
                   <Link href="/dashboard">Entrar a tu Colonia</Link>
                 </Button>
               ) : (
-                <>{/*}
-                  <Button size="lg" className="text-lg px-8 py-4 rounded-xl" asChild>
-                    <Link href="/register">Crear tu Colonia</Link>
-                  </Button>*/}
+                <>
+                  <Button size="lg" className="text-lg px-8 py-4 rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                    <Link href="/register">Pre-regístrate ahora</Link>
+                  </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-lg px-8 py-4 rounded-xl bg-white/50 backdrop-blur-sm"
+                    className="text-lg px-8 py-4 rounded-xl bg-card/50 backdrop-blur-sm"
                     asChild
                   >
                     <Link href="/explore">Explorar el Mundo</Link>
