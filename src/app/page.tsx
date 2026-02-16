@@ -21,16 +21,16 @@ export default function HomePage() {
                 <img src="/nidoria2.png" alt="Nidoria" className="mx-auto w-72 md:w-96" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-foreground mb-8 text-balance">
-              <span className="bg-gradient-to-b from-primary to-accent bg-clip-text text-transparent">
-                Forja tu imperio subterráneo
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-foreground mb-8 text-balance leading-tight">
+              <span className="bg-gradient-to-b from-primary to-accent bg-clip-text text-transparent text-glow">
+                Tu Colonia, Tu Destino, Tu Imperio
               </span>
             </h1>
-            <p className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-pretty">
-              El universo subterráneo te aguarda. Gestiona recursos, muta tu especie y conquista el hormiguero en esta experiencia de estrategia persistente.
+            <p className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto text-pretty leading-relaxed">
+              Desciende a las profundidades de <span className="text-accent font-bold">Nidoria</span>. No es solo un juego, es la simulación de supervivencia definitiva donde cada decisión forja el futuro de tu estirpe.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <Button size="lg" className="text-xl px-10 py-6 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow" asChild>
                 <Link href="/register">Pre-regístrate ahora</Link>
               </Button>
@@ -46,8 +46,45 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 soil-pattern relative">
+        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 soil-pattern relative overflow-hidden">
           <div className="max-w-5xl mx-auto">
+            {/* Beneficios de Fundador Section */}
+            <div className="mb-20">
+              <div className="text-center mb-12">
+                <span className="founder-badge text-sm md:text-lg mb-4 block">Oferta de Lanzamiento</span>
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Conviértete en Fundador</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Pre-regístrate hoy y asegura estas ventajas exclusivas para el día 1.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
+                  <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>
+                  </div>
+                  <h4 className="text-xl font-bold mb-3">Acceso Anticipado</h4>
+                  <p className="text-sm text-muted-foreground">Sé el primero en excavar los túneles de Nidoria antes del estreno global.</p>
+                </div>
+
+                <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
+                  <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <h4 className="text-xl font-bold mb-3">Emblema de Fundador</h4>
+                  <p className="text-sm text-muted-foreground">Un distintivo visual único que mostrará tu estatus de pionero para siempre.</p>
+                </div>
+
+                <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
+                  <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+                  </div>
+                  <h4 className="text-xl font-bold mb-3">Bonus de Recursos</h4>
+                  <p className="text-sm text-muted-foreground">Comienza tu colonia con un suministro extra de alimentos y materiales raros.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="nest-chamber p-8 md:p-12 text-center border-primary/40">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12">La Comunidad de Nidoria</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
@@ -82,43 +119,43 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              <div className="nest-chamber p-8 text-center flex flex-col items-center">
-                <div className="mb-8 w-full">
+              <div className="nest-chamber p-8 text-center flex flex-col items-center group">
+                <div className="mb-8 w-full overflow-hidden rounded-3xl">
                   <img
                     src="/ant-queen-chamber-golden-glow.png"
                     alt="Cámara de la Reina"
-                    className="rounded-3xl w-full h-48 object-cover border-2 border-primary/20"
+                    className="w-full h-48 object-cover border-2 border-primary/20 group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Gestión de la Reina</h3>
+                <h3 className="text-2xl font-bold mb-4 text-accent">Gestión de la Reina</h3>
                 <p className="text-muted-foreground">
                   Protege y gestiona tu reina para asegurar el crecimiento continuo de tu estirpe.
                 </p>
               </div>
 
-              <div className="nest-chamber p-8 text-center flex flex-col items-center">
-                <div className="mb-8 w-full">
+              <div className="nest-chamber p-8 text-center flex flex-col items-center group">
+                <div className="mb-8 w-full overflow-hidden rounded-3xl">
                   <img
                     src="/ant-workers-carrying-food-teamwork.png"
                     alt="Trabajo en Equipo"
-                    className="rounded-3xl w-full h-48 object-cover border-2 border-primary/20"
+                    className="w-full h-48 object-cover border-2 border-primary/20 group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Trabajo en Equipo</h3>
+                <h3 className="text-2xl font-bold mb-4 text-accent">Trabajo en Equipo</h3>
                 <p className="text-muted-foreground">
                   Coordina miles de trabajadoras para recolectar recursos y expandir tus fronteras.
                 </p>
               </div>
 
-              <div className="nest-chamber p-8 text-center flex flex-col items-center">
-                <div className="mb-8 w-full">
+              <div className="nest-chamber p-8 text-center flex flex-col items-center group">
+                <div className="mb-8 w-full overflow-hidden rounded-3xl">
                   <img
                     src="/ant-colony-workers-building-tunnels.png"
                     alt="Construcción de Túneles"
-                    className="rounded-3xl w-full h-48 object-cover border-2 border-primary/20"
+                    className="w-full h-48 object-cover border-2 border-primary/20 group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Arquitectura Viva</h3>
+                <h3 className="text-2xl font-bold mb-4 text-accent">Arquitectura Viva</h3>
                 <p className="text-muted-foreground">
                   Diseña complejas redes de túneles que se adapten a los desafíos del terreno.
                 </p>
@@ -160,7 +197,7 @@ export default function HomePage() {
               </div>
 
               <div className="relative">
-                <div className="nest-chamber p-4 amber-glow">
+                <div className="nest-chamber p-4 amber-glow float">
                   <img
                     src="/ant-colony-workers-building-tunnels.png"
                     alt="Características del juego"
