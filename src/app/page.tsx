@@ -14,19 +14,19 @@ export default function HomePage() {
       <Navigation />
 
       <main>
-        <section className="relative py-24 px-4 sm:px-6 lg:px-8 hero-gradient overflow-hidden">
+        <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 hero-gradient overflow-hidden">
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <div className="flex justify-center mb-8">
-              <div className="p-4 nest-chamber amber-glow inline-block">
-                <img src="/nidoria2.png" alt="Nidoria" className="mx-auto w-64 md:w-80" />
+            <div className="flex justify-center mb-10">
+              <div className="inline-block transform hover:scale-105 transition-transform duration-500">
+                <img src="/nidoria2.png" alt="Nidoria" className="mx-auto w-72 md:w-96" />
               </div>
             </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold text-foreground mb-8 text-balance">
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-foreground mb-8 text-balance">
               <span className="bg-gradient-to-b from-primary to-accent bg-clip-text text-transparent">
                 Forja tu imperio subterráneo
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-pretty">
+            <p className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto text-pretty">
               El universo subterráneo te aguarda. Gestiona recursos, muta tu especie y conquista el hormiguero en esta experiencia de estrategia persistente.
             </p>
 
@@ -46,11 +46,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-24 px-4 sm:px-6 lg:px-8 soil-pattern relative">
+        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 soil-pattern relative">
           <div className="max-w-5xl mx-auto">
-            <div className="nest-chamber p-12 text-center border-primary/40">
-              <h2 className="text-4xl font-bold text-foreground mb-12">La Comunidad de Nidoria</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+            <div className="nest-chamber p-8 md:p-12 text-center border-primary/40">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12">La Comunidad de Nidoria</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
                 <div className="text-center">
                   <div className="text-5xl font-bold text-primary mb-3">12,847</div>
                   <div className="text-muted-foreground text-lg uppercase tracking-wider">Colonias Activas</div>
@@ -72,11 +72,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-20">
-              <h2 className="text-5xl font-bold text-foreground mb-8">Domina el Arte del Hormiguero</h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
+            <div className="text-center mb-16 md:mb-20">
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-8">Domina el Arte del Hormiguero</h2>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
                 Experimenta la simulación de colonias más realista con IA avanzada y estrategias de supervivencia infinitas en un mundo en constante evolución.
               </p>
             </div>
@@ -127,11 +127,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-24 px-4 sm:px-6 lg:px-8 bg-muted/20">
+        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-muted/20">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className="space-y-10">
-                <h2 className="text-5xl font-bold text-foreground">El Despertar de Nidoria</h2>
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground text-center lg:text-left">El Despertar de Nidoria</h2>
                 <div className="space-y-8">
                   <div className="flex items-start gap-6">
                     <div className="p-4 rounded-full bg-primary/20 amber-glow">
