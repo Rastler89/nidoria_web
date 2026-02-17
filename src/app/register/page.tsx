@@ -10,16 +10,34 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (email) {
       setIsSubmitting(true)
-      // Simulación de guardado en base de datos
-      console.log(`Pre-registro recibido: ${email}`);
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      setIsSubmitting(false)
-      setSubmitted(true)
+      setError(null)
+      try {
+        const response = await fetch("/api/pre-register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+          setSubmitted(true)
+        } else {
+          setError(data.error || "Ocurrió un error al procesar tu registro.")
+        }
+      } catch (err) {
+        setError("Error de conexión con el servidor.")
+      } finally {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -70,17 +88,24 @@ export default function RegisterPage() {
                     Asegura tu lugar en la historia de <span className="text-accent">Nidoria</span> y reclama tus recompensas de fundador.
                   </p>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="text-left">
-                    <FormField
-                      label="Tu Correo Electrónico"
-                      type="email"
-                      placeholder="hormiga-reina@colonia.com"
-                      value={email}
-                      onChange={(v) => setEmail(v)}
-                      required
-                      className="bg-muted/20 border-primary/30 text-lg py-6"
-                    />
-                  </div>
+                    <div className="text-left">
+                      <FormField
+                        label="Tu Correo Electrónico"
+                        type="email"
+                        placeholder="hormiga-reina@colonia.com"
+                        value={email}
+                        onChange={(v) => setEmail(v)}
+                        required
+                        className="bg-muted/20 border-primary/30 text-lg py-6"
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center font-medium">
+                        {error}
+                      </div>
+                    )}
+
                     <Button
                       type="submit"
                       disabled={isSubmitting}
@@ -94,7 +119,7 @@ export default function RegisterPage() {
                   </p>
                 </>
               ) : (
-                <div className="py-8 text-center">
+                <div className="py-8 text-center animate-in fade-in zoom-in duration-500">
                   <div className="flex justify-center mb-8">
                     <div className="p-6 rounded-full bg-accent/20 amber-glow">
                       <svg className="w-16 h-16 md:w-20 md:h-20 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
