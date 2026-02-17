@@ -22,32 +22,8 @@ export function Navigation() {
             <span className="font-bold text-xl text-foreground">Nidoria</span>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation Links - Only Pre-register for now */}
           <div className="flex items-center gap-4">
-            <Link
-              href="/explore"
-              className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-                isActive("/explore")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
-              )}
-            >
-              Explorar
-            </Link>
-
-            <Link
-              href="/wiki"
-              className={cn(
-                "hidden sm:inline-flex px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-                pathname.startsWith("/wiki")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
-              )}
-            >
-              Wiki
-            </Link>
-
             <div className="flex items-center gap-3">
               <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
                 <Link href="/register">Pre-regístrate</Link>

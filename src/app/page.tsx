@@ -31,16 +31,8 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Button size="lg" className="text-xl px-10 py-6 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow" asChild>
+              <Button size="lg" className="text-xl px-12 py-8 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow text-2xl" asChild>
                 <Link href="/register">Pre-regístrate ahora</Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-xl px-10 py-6 rounded-2xl glass-card"
-                asChild
-              >
-                <Link href="/explore">Explorar el Mundo</Link>
               </Button>
             </div>
           </div>
