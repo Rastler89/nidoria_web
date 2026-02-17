@@ -23,59 +23,32 @@ export function Navigation() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-4">
-            <Link
-              href="/explore"
-              className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-                isActive("/explore")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
-              )}
-            >
-              Explorar
-            </Link>
-
-            <Link
-              href="/wiki"
-              className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-                pathname.startsWith("/wiki")
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
-              )}
-            >
-              Wiki
-            </Link>
-
-            {process.env.LOGIN_ENABLED === "true" && user ? (
-              <div className="flex items-center gap-4">
-                <Link
-                  href="/dashboard"
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-                    isActive("/dashboard")
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent",
-                  )}
-                >
-                  Panel
-                </Link>
-                <span className="text-sm text-muted-foreground">Bienvenido, {user.username}</span>
-                <Button variant="outline" size="sm" className="rounded-xl bg-transparent" onClick={logout}>
-                  Cerrar Sesión
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" className="rounded-xl" asChild>
-                  <Link href="/login">Iniciar Sesión</Link>
-                </Button>
-                <Button size="sm" className="rounded-xl" asChild>
-                  <Link href="/register">Registrarse</Link>
-                </Button>
-              </div>
-            )}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
+              <Link
+                href="/explore"
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  isActive("/explore") ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Explorar
+              </Link>
+              <Link
+                href="/wiki"
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  isActive("/wiki") ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Wiki
+              </Link>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                <Link href="/register">Pre-regístrate</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
