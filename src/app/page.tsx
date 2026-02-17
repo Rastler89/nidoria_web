@@ -14,7 +14,7 @@ export default function HomePage() {
       <Navigation />
 
       <main>
-        <section className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 hero-gradient overflow-hidden">
+        <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 hero-gradient overflow-hidden">
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <div className="flex justify-center mb-10">
               <div className="inline-block transform hover:scale-105 transition-transform duration-500">
@@ -23,16 +23,19 @@ export default function HomePage() {
             </div>
             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-foreground mb-8 text-balance leading-tight">
               <span className="bg-gradient-to-b from-primary to-accent bg-clip-text text-transparent text-glow">
-                Tu Colonia, Tu Destino, Tu Imperio
+                Domina el Inframundo: La Simulación de Colonias Definitiva
               </span>
             </h1>
-            <p className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto text-pretty leading-relaxed">
-              Desciende a las profundidades de <span className="text-accent font-bold">Nidoria</span>. No es solo un juego, es la simulación de supervivencia definitiva donde cada decisión forja el futuro de tu estirpe.
+            <p className="text-lg md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto text-pretty leading-relaxed font-serif italic">
+              "En las profundidades de la tierra, el poder no se hereda, se construye túnel a túnel."
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Button size="lg" className="text-xl px-12 py-8 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow text-2xl" asChild>
+              <Button size="lg" className="text-xl px-12 py-8 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow text-2xl w-full sm:w-auto" asChild>
                 <Link href="/register">Pre-regístrate ahora</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="text-xl px-12 py-8 rounded-2xl border-primary/40 text-primary hover:bg-primary/10 text-2xl w-full sm:w-auto backdrop-blur-sm" asChild>
+                <Link href="/explore">Explorar el Mundo</Link>
               </Button>
             </div>
           </div>
@@ -46,7 +49,7 @@ export default function HomePage() {
                 <span className="founder-badge text-sm md:text-lg mb-4 block">Oferta de Lanzamiento</span>
                 <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Conviértete en Fundador</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Pre-regístrate hoy y asegura estas ventajas exclusivas para el día 1.
+                  Pre-regístrate hoy y asegura estas ventajas exclusivas para el día 1. Ayúdanos a forjar la primera gran colonia.
                 </p>
               </div>
 
@@ -77,26 +80,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="nest-chamber p-8 md:p-12 text-center border-primary/40">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12">La Comunidad de Nidoria</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-primary mb-3">12,847</div>
-                  <div className="text-muted-foreground text-lg uppercase tracking-wider">Colonias Activas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-accent mb-3">2.3M</div>
-                  <div className="text-muted-foreground text-lg uppercase tracking-wider">Hormigas</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-primary mb-3">156</div>
-                  <div className="text-muted-foreground text-lg uppercase tracking-wider">Batallas Diarias</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-accent mb-3">98%</div>
-                  <div className="text-muted-foreground text-lg uppercase tracking-wider">Satisfacción</div>
-                </div>
-              </div>
+            <div className="nest-chamber p-8 md:p-12 text-center border-primary/40 bg-primary/5">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Únete a la Expedición</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
+                Estamos construyendo algo grande. Aunque la colonia aún está en fase de hibernación, tú puedes ser uno de los arquitectos originales.
+              </p>
+              <Button variant="link" className="text-accent text-lg hover:text-accent/80" asChild>
+                <Link href="/wiki">Consultar el Manual (Wiki) →</Link>
+              </Button>
             </div>
           </div>
         </section>

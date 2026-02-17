@@ -22,8 +22,28 @@ export function Navigation() {
             <span className="font-bold text-xl text-foreground">Nidoria</span>
           </Link>
 
-          {/* Navigation Links - Only Pre-register for now */}
-          <div className="flex items-center gap-4">
+          {/* Navigation Links */}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
+              <Link
+                href="/explore"
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  isActive("/explore") ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Explorar
+              </Link>
+              <Link
+                href="/wiki"
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  isActive("/wiki") ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Wiki
+              </Link>
+            </div>
             <div className="flex items-center gap-3">
               <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
                 <Link href="/register">Pre-regístrate</Link>
