@@ -71,7 +71,7 @@ export default function ExplorePage() {
           </div>
         </section>
 
-        <section className="mb-16">
+        {/*<section className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-4">Especies de Hormigas y Roles</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -118,7 +118,7 @@ export default function ExplorePage() {
               </Card>
             ))}
           </div>
-        </section>
+        </section>*/}
 
         <section className="mb-16">
           <div className="text-center mb-8">
