@@ -14,7 +14,7 @@ export default function HomePage() {
       <Navigation />
 
       <main>
-        <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 hero-gradient overflow-hidden">
+        <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <div className="flex justify-center mb-10">
               <div className="inline-block transform hover:scale-105 transition-transform duration-500">
@@ -56,7 +56,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
                   <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z"/></svg>
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L9 9l-8 3 8 3 3 8 3-8 8-3-8-3-3-8z" /></svg>
                   </div>
                   <h4 className="text-xl font-bold mb-3">Acceso Anticipado</h4>
                   <p className="text-sm text-muted-foreground">Sé el primero en excavar los túneles de Nidoria antes del estreno global.</p>
@@ -64,7 +64,7 @@ export default function HomePage() {
 
                 <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
                   <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" /></svg>
                   </div>
                   <h4 className="text-xl font-bold mb-3">Emblema de Fundador</h4>
                   <p className="text-sm text-muted-foreground">Un distintivo visual único que mostrará tu estatus de pionero para siempre.</p>
@@ -72,7 +72,7 @@ export default function HomePage() {
 
                 <div className="glass-card p-8 border-accent/30 text-center hover:bg-accent/5 transition-colors group">
                   <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+                    <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z" /></svg>
                   </div>
                   <h4 className="text-xl font-bold mb-3">Bonus de Recursos</h4>
                   <p className="text-sm text-muted-foreground">Comienza tu colonia con un suministro extra de alimentos y materiales raros.</p>
