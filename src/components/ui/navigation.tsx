@@ -5,6 +5,7 @@ import { Button } from "./button"
 import { NidoriaIcon } from "./nidoria-icon"
 import { useAuth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
+import { AccessibilityMenu } from "@/components/accessibility-menu"
 
 export function Navigation() {
   const pathname = usePathname()
@@ -45,6 +46,7 @@ export function Navigation() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
+              <AccessibilityMenu />
               <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
                 <Link href="/register">Pre-regístrate</Link>
               </Button>

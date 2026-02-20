@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Crimson_Pro } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +31,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable}`}>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable}`} suppressHydrationWarning>
       <body className="font-sans">
         <Suspense>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
         </Suspense>
       </body>
     </html>
