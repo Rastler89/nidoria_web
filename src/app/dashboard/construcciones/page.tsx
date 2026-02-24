@@ -7,19 +7,36 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Stats } from "@/components/stats"
+import { useSocket } from "@/context/SocketContext"
+import useSWR from "swr"
+import { toast } from "@/components/ui/use-toast"
+
+const fetcher = (url: string) => fetch(url).then(r => r.json());
+
+interface Construction {
+  id: number
+  name: string
+  level: number
+  upgrading: boolean
+  maxLevel: number
+  cost: {
+    food: number
+    wood: number
+    leaves?: number
+  }
+  description: string
+  benefits: string
+  upgradeTime: string
+  timeLeft?: string
+}
 
 export default function ConstruccionesPage() {
   const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null)
+  const { data: socketData } = useSocket()
+  const { data: serverData, mutate } = useSWR('/api/constructions', fetcher)
 
-  const gameData = {
-    resources: {
-      eggs: 234,
-      larvae: 156,
-      workers: 1247,
-      food: 2340,
-      wood: 890,
-      leaves: 567,
-    },
+  // Fallback data structure if API returns nothing or error
+  const defaultGameData = {
     constructions: [
       {
         id: 1,
@@ -122,6 +139,39 @@ export default function ConstruccionesPage() {
     ],
   }
 
+  // Determine which data to use: Socket > Server > Default
+  // Assuming the API/Socket returns an object with a 'constructions' array
+  // If the returned data doesn't match the shape, we might have issues, but this is a best-effort integration.
+  const activeConstructions: Construction[] = socketData?.constructions || serverData?.constructions || defaultGameData.constructions;
+  const lockedBuildings: any[] = socketData?.lockedBuildings || serverData?.lockedBuildings || defaultGameData.lockedBuildings;
+
+  const handleUpgrade = async (id: number) => {
+    try {
+      const res = await fetch('/api/constructions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ constructionId: id })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upgrade");
+      }
+
+      toast({
+        title: "Mejora iniciada",
+        description: "La construcción se está mejorando.",
+      });
+
+      mutate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar la mejora.",
+        variant: "destructive"
+      });
+    }
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -153,7 +203,7 @@ export default function ConstruccionesPage() {
                   <CardDescription>Estructuras construidas y operativas en tu colonia</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {gameData.constructions.map((construction) => (
+                  {activeConstructions.map((construction) => (
                     <div
                       key={construction.id}
                       className={`tech-node p-6 cursor-pointer transition-all ${
@@ -201,7 +251,7 @@ export default function ConstruccionesPage() {
                             )}
                           </div>
                           <div className="flex gap-2">
-                            <Button className="flex-1 interactive-button">
+                            <Button className="flex-1 interactive-button" onClick={() => handleUpgrade(construction.id)}>
                               Mejorar a Nivel {construction.level + 1}
                             </Button>
                             <Button variant="outline" size="sm">
@@ -224,7 +274,7 @@ export default function ConstruccionesPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {gameData.lockedBuildings.map((building) => (
+                  {lockedBuildings.map((building) => (
                     <div key={building.id} className="tech-node locked p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
@@ -268,19 +318,19 @@ export default function ConstruccionesPage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 rounded-lg bg-primary/20">
-                      <div className="text-2xl font-bold text-primary">5</div>
+                      <div className="text-2xl font-bold text-primary">{activeConstructions.length}</div>
                       <div className="text-sm text-muted-foreground">Activos</div>
                     </div>
                     <div className="p-3 rounded-lg bg-accent/20">
-                      <div className="text-2xl font-bold text-accent">1</div>
+                      <div className="text-2xl font-bold text-accent">{activeConstructions.filter(c => c.upgrading).length}</div>
                       <div className="text-sm text-muted-foreground">Mejorando</div>
                     </div>
                     <div className="p-3 rounded-lg bg-secondary/20">
-                      <div className="text-2xl font-bold text-secondary">4</div>
+                      <div className="text-2xl font-bold text-secondary">{lockedBuildings.length}</div>
                       <div className="text-sm text-muted-foreground">Bloqueados</div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted/20">
-                      <div className="text-2xl font-bold">15</div>
+                      <div className="text-2xl font-bold">{activeConstructions.reduce((acc, curr) => acc + curr.level, 0)}</div>
                       <div className="text-sm text-muted-foreground">Nivel Total</div>
                     </div>
                   </div>
@@ -294,7 +344,7 @@ export default function ConstruccionesPage() {
                   </CardHeader>
                   <CardContent>
                     {(() => {
-                      const building = gameData.constructions.find((b) => b.id === selectedBuilding)
+                      const building = activeConstructions.find((b) => b.id === selectedBuilding)
                       return building ? (
                         <div className="space-y-4">
                           <h3 className="font-bold text-lg gradient-text">{building.name}</h3>

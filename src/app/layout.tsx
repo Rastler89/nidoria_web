@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SocketProvider } from "@/context/SocketContext";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 {children}
+                <Toaster />
               </ThemeProvider>
             </SocketProvider>
           </AuthProvider>

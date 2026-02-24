@@ -11,6 +11,8 @@ import { useResources } from "@/lib/useResources"
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input"
 import { useSocket } from "@/context/SocketContext"
+import { toast } from "@/components/ui/use-toast"
+import { mutate } from "swr"
 
 export default function MisionesPage() {
   const { data: sockedData } = useSocket()
@@ -33,7 +35,7 @@ export default function MisionesPage() {
       icon: "🍯",
       description: "Las obreras recolectan néctar de flores cercanas",
       efficiency: 1,
-      workersAssigned: 0,
+      workersAssigned: data?.resources?.find((r: any) => r.type === 'FOOD')?.workers || 0, // Attempt to get from data
       production: 0,
       timeRemaining: null,
     },
@@ -45,7 +47,7 @@ export default function MisionesPage() {
       icon: "🪵",
       description: "Cortar y transportar pequeñas ramas para construcción",
       efficiency: 1,
-      workersAssigned: 0,
+      workersAssigned: data?.resources?.find((r: any) => r.type === 'WOOD')?.workers || 0,
       production: 0,
       timeRemaining: null,
     },
@@ -57,36 +59,60 @@ export default function MisionesPage() {
       icon: "🍃",
       description: "Recolectar hojas frescas para cultivo de hongos",
       efficiency: 1,
-      workersAssigned: 0,
+      workersAssigned: data?.resources?.find((r: any) => r.type === 'LEAF')?.workers || 0,
       production: 0,
       timeRemaining: null,
     },
   ]
 
   const handleAssignWorkers = (resource: string, amount: number) => {
-    if (amount <= data?.ants) {
+    // Basic validation against total ants
+    if (amount >= 0) {
       setAssignments((prev) => ({
         ...prev,
         [resource]: amount,
       }))
-    } else {
-      console.log('hora')
     }
   }
 
   const totalAssignedWorkers = Object.values(assignments).reduce((sum, val) => sum + val, 0);
+  // Calculate assignable workers properly
   const assignableWorkers = (data?.ants ?? 0) - (data?.busy_ants ?? 0);
   const remainingWorkers = assignableWorkers - totalAssignedWorkers;
 
   const handleSubmit = async (resource: string, amount: number) => {
-    console.log(resource, amount);
-    const response = await fetch("/api/misiones", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ resource: resource, amount: amount }),
-    })
+    try {
+      const response = await fetch("/api/misiones", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ resource: resource, amount: amount }),
+      })
+
+      if (!response.ok) throw new Error("Failed to assign mission");
+
+      toast({
+        title: "Misión actualizada",
+        description: `Se han asignado ${amount} obreras a la tarea.`
+      });
+
+      // Refresh resources
+      mutate('/api/resources');
+
+      // Reset assignment input for this resource
+       setAssignments((prev) => ({
+        ...prev,
+        [resource === 'F' ? 'food' : resource === 'W' ? 'wood' : 'leaves']: 0,
+      }))
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo asignar la misión.",
+        variant: "destructive"
+      });
+    }
   }
 
   return (
@@ -110,7 +136,7 @@ export default function MisionesPage() {
               Misiones
             </h1>
             <p className="text-xl text-muted-foreground">
-              Mejora y construye nuevas estructuras para fortalecer tu colonia
+              Envía obreras a explotar recursos y explorar nuevos territorios
             </p>
           </div>
 
@@ -121,7 +147,7 @@ export default function MisionesPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 rounded-lg bg-primary/20">
-                  <div className="text-3xl font-bold text-primary">{remainingWorkers}</div>
+                  <div className="text-3xl font-bold text-primary">{remainingWorkers >= 0 ? remainingWorkers : 0}</div>
                   <div className="text-sm text-muted-foreground">Obreras libres</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-accent/20">
@@ -156,10 +182,6 @@ export default function MisionesPage() {
                       <span>Obreras Asignadas:</span>
                       <span className="font-bold text-accent">{mision.workersAssigned}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Producción/hora: </span>
-                      <span className="font-bold text-secondary">{mision.production}</span>
-                    </div>
                     {mision.timeRemaining && (
                       <div className="flex justify-between text-sm">
                         <span>Tiempo restante:</span>
@@ -170,10 +192,10 @@ export default function MisionesPage() {
                   {mision.workersAssigned > 0 && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Progreso</span>
-                        <span>75%</span>
+                        <span>Estado</span>
+                        <span>Activo</span>
                       </div>
-                      <Progress value={75} className="h-2" />
+                      <Progress value={100} className="h-2" />
                     </div>
                   )}
                   <div className="space-y-3">
@@ -183,15 +205,14 @@ export default function MisionesPage() {
                         type="number"
                         min="0"
                         max={assignableWorkers}
-                        value={assignments[mision.resource as keyof typeof assignments]}
+                        value={assignments[mision.resource as keyof typeof assignments] || ''}
                         onChange={(e) => handleAssignWorkers(mision.resource, Number.parseInt(e.target.value) || 0)}
                         className="flex-1"
                         placeholder="0"
-                        disabled={remainingWorkers <= 0 && assignments[mision.resource as keyof typeof assignments] === 0}
                       />
                       <Button
                         className="interactive-button"
-                        disabled={assignments[mision.resource as keyof typeof assignments] === 0}
+                        disabled={assignments[mision.resource as keyof typeof assignments] === 0 && assignments[mision.resource as keyof typeof assignments] !== undefined}
                         onClick={() => handleSubmit(mision.type, assignments[mision.resource as keyof typeof assignments])}
                       >
                         Enviar

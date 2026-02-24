@@ -6,19 +6,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { Stats } from "@/components/stats"
+import { useSocket } from "@/context/SocketContext"
+import useSWR from "swr"
+import { toast } from "@/components/ui/use-toast"
+
+const fetcher = (url: string) => fetch(url).then(r => r.json());
+
+interface Research {
+  id: number
+  name: string
+  progress: number
+  completed: boolean
+  cost: {
+    food: number
+    wood?: number
+    leaves?: number
+  }
+  timeLeft: string
+  description: string
+  benefits: string
+  category: string
+  researchTime?: string
+  requirement?: string
+}
 
 export default function InvestigacionesPage() {
   const [selectedResearch, setSelectedResearch] = useState<number | null>(null)
+  const { data: socketData } = useSocket()
+  const { data: serverData, mutate } = useSWR('/api/investigations', fetcher)
 
-  const gameData = {
-    resources: {
-      eggs: 234,
-      larvae: 156,
-      workers: 1247,
-      food: 2340,
-      wood: 890,
-      leaves: 567,
-    },
+  const defaultGameData = {
     research: [
       {
         id: 1,
@@ -109,16 +127,34 @@ export default function InvestigacionesPage() {
     ],
   }
 
+  const activeResearch: Research[] = socketData?.investigations || serverData?.investigations || defaultGameData.research;
+  const lockedResearch: Research[] = socketData?.lockedResearch || serverData?.lockedResearch || defaultGameData.lockedResearch;
+
   const categories = ["Todas", "Economía", "Militar", "Infraestructura", "Social"]
   const [selectedCategory, setSelectedCategory] = useState("Todas")
 
   const filteredResearch =
-    selectedCategory === "Todas" ? gameData.research : gameData.research.filter((r) => r.category === selectedCategory)
+    selectedCategory === "Todas" ? activeResearch : activeResearch.filter((r) => r.category === selectedCategory)
 
   const filteredLockedResearch =
     selectedCategory === "Todas"
-      ? gameData.lockedResearch
-      : gameData.lockedResearch.filter((r) => r.category === selectedCategory)
+      ? lockedResearch
+      : lockedResearch.filter((r) => r.category === selectedCategory)
+
+  const handleResearch = async (id: number) => {
+    try {
+        const res = await fetch('/api/investigations', {
+            method: 'POST',
+            body: JSON.stringify({ investigationId: id }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Failed to start research');
+        toast({ title: "Investigación iniciada", description: "El desarrollo de la tecnología ha comenzado." });
+        mutate();
+    } catch (e) {
+        toast({ title: "Error", description: "No se pudo iniciar la investigación.", variant: "destructive" });
+    }
+  }
 
   return (
     <ProtectedRoute>
@@ -127,34 +163,7 @@ export default function InvestigacionesPage() {
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Panel de recursos */}
-          <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 border border-primary/30 glow-effect">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🥚 Huevos</div>
-                <div className="text-2xl font-bold">{gameData.resources.eggs.toLocaleString()}</div>
-              </div>
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🐛 Larvas</div>
-                <div className="text-2xl font-bold">{gameData.resources.larvae.toLocaleString()}</div>
-              </div>
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🐜 Obreras</div>
-                <div className="text-2xl font-bold">{gameData.resources.workers.toLocaleString()}</div>
-              </div>
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🍯 Comida</div>
-                <div className="text-2xl font-bold">{gameData.resources.food.toLocaleString()}</div>
-              </div>
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🪵 Madera</div>
-                <div className="text-2xl font-bold">{gameData.resources.wood.toLocaleString()}</div>
-              </div>
-              <div className="resource-counter text-center">
-                <div className="text-sm opacity-90">🍃 Hojas</div>
-                <div className="text-2xl font-bold">{gameData.resources.leaves.toLocaleString()}</div>
-              </div>
-            </div>
-          </div>
+          <Stats />
 
           {/* Navegación de regreso */}
           <div className="mb-6">
@@ -250,7 +259,7 @@ export default function InvestigacionesPage() {
                                   🍃 {research.cost.leaves?.toLocaleString()}
                                 </span>
                               </div>
-                              <Button className="w-full interactive-button">Iniciar Investigación</Button>
+                              <Button className="w-full interactive-button" onClick={() => handleResearch(research.id)}>Iniciar Investigación</Button>
                             </div>
                           )}
                           {research.progress > 0 && research.progress < 100 && (
@@ -322,15 +331,15 @@ export default function InvestigacionesPage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-3 rounded-lg bg-primary/20">
-                      <div className="text-2xl font-bold text-primary">2</div>
+                      <div className="text-2xl font-bold text-primary">{activeResearch.filter(r => r.completed).length}</div>
                       <div className="text-sm text-muted-foreground">Completadas</div>
                     </div>
                     <div className="p-3 rounded-lg bg-accent/20">
-                      <div className="text-2xl font-bold text-accent">2</div>
+                      <div className="text-2xl font-bold text-accent">{activeResearch.filter(r => r.progress > 0 && !r.completed).length}</div>
                       <div className="text-sm text-muted-foreground">En Progreso</div>
                     </div>
                     <div className="p-3 rounded-lg bg-secondary/20">
-                      <div className="text-2xl font-bold text-secondary">4</div>
+                      <div className="text-2xl font-bold text-secondary">{lockedResearch.length}</div>
                       <div className="text-sm text-muted-foreground">Bloqueadas</div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted/20">
@@ -348,7 +357,7 @@ export default function InvestigacionesPage() {
                   </CardHeader>
                   <CardContent>
                     {(() => {
-                      const research = gameData.research.find((r) => r.id === selectedResearch)
+                      const research = activeResearch.find((r) => r.id === selectedResearch)
                       return research ? (
                         <div className="space-y-4">
                           <h3 className="font-bold text-lg gradient-text">{research.name}</h3>

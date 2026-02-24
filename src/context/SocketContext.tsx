@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/lib/auth';
+import { toast } from '@/components/ui/use-toast';
 
 interface SocketState {
     socket: Socket | null;
@@ -16,7 +17,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const dbHost = process.env.NEXT_PUBLIC_DB_HOST || 'http://localhost:4000'
     const { token, user } = useAuth();
     const [socket, setSocket] = useState<Socket | null>(null);
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<any>(null);
 
     console.log(dbHost);
 
@@ -28,7 +29,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         newSocket.on('anthill_update', (updatedData) => {
-            setData(prev => ({ ...prev, ...updatedData }));
+            setData((prev: any) => ({ ...prev, ...updatedData }));
+            toast({
+                title: "Actualización de la colonia",
+                description: "Se han recibido nuevos datos del hormiguero.",
+            })
         });
 
         setSocket(newSocket);
