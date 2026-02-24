@@ -48,7 +48,7 @@ export function Navigation() {
             <div className="flex items-center gap-3">
               <AccessibilityMenu />
               <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                <Link href="/register">Pre-regístrate</Link>
+                <Link href="/login">Login</Link>
               </Button>
             </div>
           </div>
