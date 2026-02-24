@@ -30,13 +30,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check for existing token on mount
-    const savedToken = localStorage.getItem("auth_token")
-    const savedUser = localStorage.getItem("user_data")
+    const savedToken = Cookies.get("auth_token")
+    const savedUser = Cookies.get("user_data")
+    const savedRefreshToken = Cookies.get("refresh_token")
     if (savedToken && savedUser) {
       setToken(savedToken)
-      // In a real app, you'd validate the token with your API
-      // For now, we'll simulate a user from the token
-      setUser(savedUser)
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (e) {
+        console.error("Failed to parse user data", e)
+      }
+    }
+    if (savedRefreshToken) {
+      setRefreshToken(savedRefreshToken)
     }
     setLoading(false)
   }, [])
@@ -129,9 +135,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("user_data")
-    localStorage.removeItem("refresh_token")
+    Cookies.remove("auth_token")
+    Cookies.remove("user_data")
+    Cookies.remove("refresh_token")
     setToken(null)
     setRefreshToken(null)
     setUser(null)
