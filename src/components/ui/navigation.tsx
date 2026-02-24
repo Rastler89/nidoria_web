@@ -9,7 +9,7 @@ import { AccessibilityMenu } from "@/components/accessibility-menu"
 
 export function Navigation() {
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const isActive = (path: string) => pathname === path
 
@@ -47,9 +47,27 @@ export function Navigation() {
             </div>
             <div className="flex items-center gap-3">
               <AccessibilityMenu />
-              <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
+              {!loading && (
+                user ? (
+                  <>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => logout()}>
+                      Cerrar sesión
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href="/login">Iniciar sesión</Link>
+                    </Button>
+                    <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                      <Link href="/register">Pre-regístrate</Link>
+                    </Button>
+                  </>
+                )
+              )}
             </div>
           </div>
         </div>

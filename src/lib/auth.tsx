@@ -62,9 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await response.json()
         const { token: authToken, user: userData, refreshToken: refreshToken} = data
 
-        Cookies.set("auth_token", authToken)
-        Cookies.set("user_data", JSON.stringify(userData))
-        Cookies.set("refresh_token", String(refreshToken))
+        Cookies.set("auth_token", authToken, { expires: 7 })
+        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 })
+        Cookies.set("refresh_token", String(refreshToken), { expires: 7 })
 
         setToken(authToken)
         setUser(userData)
@@ -93,9 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await response.json()
         const { token: authToken, user: userData, refreshToken: refreshToken} = data
 
-        Cookies.set("auth_token", authToken);
-        Cookies.set("user_data", userData);
-        Cookies.set("refresh_token", refreshToken);
+        Cookies.set("auth_token", authToken, { expires: 7 })
+        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 })
+        Cookies.set("refresh_token", String(refreshToken), { expires: 7 })
         setToken(authToken)
         setUser(userData)
         setRefreshToken(refreshToken)
