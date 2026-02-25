@@ -1,234 +1,185 @@
 "use client"
-import { useState } from "react"
 import type React from "react"
-
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import Link from "next/link"
-import { FormField } from "@/components/ui/form-field"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { Navigation } from "@/components/ui/navigation"
+import { FormField } from "@/components/ui/form-field"
 import { useAuth } from "@/lib/auth"
 
 export default function RegisterPage() {
-    const [formData, setFormData] = useState({
-        email: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
-    })
-    const [errors, setErrors] = useState<Record<string, string>>({})
-    const [isLoading, setIsLoading] = useState(false)
-    const { register } = useAuth()
-    const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {}
+  const { register } = useAuth()
+  const router = useRouter()
 
-        if (!formData.email) {
-            newErrors.email = "El email es requerido"
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = "Por favor ingresa un email válido"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email && username && password) {
+      setIsSubmitting(true)
+      setError(null)
+      try {
+        const success = await register(email, username, password)
+
+        if (success) {
+          setSubmitted(true)
+          // Optional: redirect after a delay
+          setTimeout(() => {
+            router.push("/dashboard")
+          }, 2000)
+        } else {
+          setError("Ocurrió un error al procesar tu registro. Por favor verifica tus datos.")
         }
-
-        if (!formData.username) {
-            newErrors.username = "El nombre de usuario es requerido"
-        } else if (formData.username.length < 3) {
-            newErrors.username = "El nombre de usuario debe tener al menos 3 caracteres"
-        }
-
-        if (!formData.password) {
-            newErrors.password = "La contraseña es requerida"
-        } else if (formData.password.length < 6) {
-            newErrors.password = "La contraseña debe tener al menos 6 caracteres"
-        }
-
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = "Por favor confirma tu contraseña"
-        } else if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = "Las contraseñas no coinciden"
-        }
-
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
+      } catch (err) {
+        setError("Error de conexión con el servidor.")
+      } finally {
+        setIsSubmitting(false)
+      }
     }
+  }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-
-        if (!validateForm()) return
-
-        setIsLoading(true)
-        try {
-            const success = await register(formData.email, formData.username, formData.password)
-            if (success) {
-                router.push("/dashboard")
-            } else {
-                setErrors({ submit: "El registro falló. Por favor intenta de nuevo." })
-            }
-        } catch (error) {
-            setErrors({ submit: "Ocurrió un error. Por favor intenta de nuevo." })
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    const updateField = (field: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }))
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: "" }))
-        }
-    }
-
-    return (
-        <div className="max-h-screen relative overflow-hidden morphing-bg">
-            {/*<div className="ant-particles">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="ant-particle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 25}s`,
-              animationDuration: `${12 + Math.random() * 15}s`,
-              width: `${2 + Math.random() * 4}px`,
-              height: `${2 + Math.random() * 4}px`,
-            }}
-          />
-        ))}
-      </div>*/}
-
-            <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-background/5 to-primary/25">
-                <div className="absolute inset-0 bg-[url('/ant-workers-carrying-food-teamwork.png')] bg-cover bg-center opacity-8"></div>
-            </div>
-
-            <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-                <div className="w-full max-w-lg">
-                    <div className="text-center mb-10 relative">
-                        <div className="floating-animation inline-flex items-center justify-center w-28 h-28 glass-card rounded-full mb-8 pulse-glow relative">
-                            <svg className="w-14 h-14 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2L8 8h8l-4-6zm0 20l4-6H8l4 6zm-6-8L2 12l4-2v4zm12 0v-4l4 2-4 2z" />
-                            </svg>
-                        </div>
-                        <h1 className="text-6xl font-bold gradient-text mb-6 text-balance">
-                            Únete a <span className="text-secondary">Nidoria</span>
-                        </h1>
-                        <p className="text-muted-foreground text-xl leading-relaxed max-w-md mx-auto">
-                            Construye tu imperio subterráneo y lidera tu propia colonia de hormigas
-                        </p>
-
-                        <div
-                            className="absolute -top-8 -left-16 w-24 h-24 bg-primary/8 rounded-full blur-2xl floating-animation"
-                            style={{ animationDelay: "1s" }}
-                        ></div>
-                        <div
-                            className="absolute -bottom-12 -right-20 w-32 h-32 bg-secondary/8 rounded-full blur-3xl floating-animation"
-                            style={{ animationDelay: "3s" }}
-                        ></div>
-                        <div
-                            className="absolute top-1/2 -left-8 w-12 h-12 bg-accent/10 rounded-full blur-xl floating-animation"
-                            style={{ animationDelay: "5s" }}
-                        ></div>
-                    </div>
-
-                    <div className="glass-card rounded-3xl p-10 shadow-2xl border border-border/20">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-5">
-                                <div className="relative">
-                                    <FormField
-                                        label="Email"
-                                        type="email"
-                                        placeholder="jugador@nidoria.com"
-                                        value={formData.email}
-                                        onChange={(value) => updateField("email", value)}
-                                        error={errors.email}
-                                        required
-                                        className="glass-input"
-                                    />
-                                </div>
-
-                                <div className="relative">
-                                    <FormField
-                                        label="Nombre de Jugador"
-                                        placeholder="Elige tu nombre de líder"
-                                        value={formData.username}
-                                        onChange={(value) => updateField("username", value)}
-                                        error={errors.username}
-                                        required
-                                        className="glass-input"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="relative">
-                                        <FormField
-                                            label="Contraseña"
-                                            type="password"
-                                            placeholder="Crea una contraseña segura"
-                                            value={formData.password}
-                                            onChange={(value) => updateField("password", value)}
-                                            error={errors.password}
-                                            required
-                                            className="glass-input"
-                                        />
-                                    </div>
-
-                                    <div className="relative">
-                                        <FormField
-                                            label="Confirmar Contraseña"
-                                            type="password"
-                                            placeholder="Confirma tu contraseña"
-                                            value={formData.confirmPassword}
-                                            onChange={(value) => updateField("confirmPassword", value)}
-                                            error={errors.confirmPassword}
-                                            required
-                                            className="glass-input"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {errors.submit && (
-                                <div className="glass-card p-4 rounded-2xl bg-destructive/10 border border-destructive/20">
-                                    <p className="text-sm text-destructive-foreground">{errors.submit}</p>
-                                </div>
-                            )}
-
-                            <Button
-                                type="submit"
-                                className="interactive-button w-full text-xl py-6 rounded-2xl bg-gradient-to-r from-primary via-primary/90 to-secondary hover:from-primary/90 hover:via-primary hover:to-secondary/90 text-primary-foreground font-bold shadow-xl"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <LoadingSpinner size="sm" text="Construyendo tu colonia..." />
-                                ) : (
-                                    <span className="flex items-center justify-center gap-3">
-                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                        Fundar Mi Colonia
-                                    </span>
-                                )}
-                            </Button>
-
-                            <div className="text-center pt-6 border-t border-border/20">
-                                <p className="text-muted-foreground">
-                                    ¿Ya tienes una colonia?{" "}
-                                    <Link
-                                        href="/login"
-                                        className="text-secondary hover:text-secondary/80 font-bold hover:underline transition-all duration-300"
-                                    >
-                                        Regresa a casa
-                                    </Link>
-                                </p>
-                            </div>
-                        </form>
-                    </div>
+  return (
+    <div className="min-h-screen bg-background ant-texture">
+      <Navigation />
+      <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-64px)] p-4">
+        <div className="w-full max-w-5xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Benefits Column */}
+            <div className="hidden lg:block space-y-8 pr-8">
+              <span className="founder-badge text-lg">Comienza tu Legado</span>
+              <h2 className="text-4xl font-bold text-foreground">Forja tu Colonia</h2>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4 p-4 rounded-2xl glass-card border-accent/20">
+                  <div className="mt-1">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">Gestiona tu Hormiguero</h4>
+                    <p className="text-sm text-muted-foreground">Construye cámaras, túneles y defensas para proteger a tu reina.</p>
+                  </div>
                 </div>
+                <div className="flex items-start gap-4 p-4 rounded-2xl glass-card border-accent/20">
+                  <div className="mt-1">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">Lidera tus Tropas</h4>
+                    <p className="text-sm text-muted-foreground">Recluta diferentes tipos de hormigas y conquista nuevos territorios.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-4 rounded-2xl glass-card border-accent/20">
+                  <div className="mt-1">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">Investiga y Evoluciona</h4>
+                    <p className="text-sm text-muted-foreground">Desbloquea tecnologías y mutaciones para mejorar tu colonia.</p>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {/* Form Column */}
+            <div className="nest-chamber p-8 md:p-12 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <img src="/nidoria2.png" alt="" className="w-32 rotate-12" />
+              </div>
+
+              {!submitted ? (
+                <>
+                  <div className="lg:hidden flex justify-center mb-6">
+                    <img src="/nidoria2.png" alt="Nidoria" className="w-40" />
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground text-center">Registro</h1>
+                  <p className="text-lg text-muted-foreground mb-8 text-center text-pretty">
+                    Crea tu cuenta en <span className="text-accent">Nidoria</span> y comienza tu aventura.
+                  </p>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="text-left space-y-4">
+                      <FormField
+                        label="Nombre de Usuario"
+                        type="text"
+                        placeholder="ReinaSuprema"
+                        value={username}
+                        onChange={(v) => setUsername(v)}
+                        required
+                        className="bg-muted/20 border-primary/30 text-lg py-6"
+                      />
+                      <FormField
+                        label="Correo Electrónico"
+                        type="email"
+                        placeholder="hormiga@colonia.com"
+                        value={email}
+                        onChange={(v) => setEmail(v)}
+                        required
+                        className="bg-muted/20 border-primary/30 text-lg py-6"
+                      />
+                      <FormField
+                        label="Contraseña"
+                        type="password"
+                        placeholder="********"
+                        value={password}
+                        onChange={(v) => setPassword(v)}
+                        required
+                        className="bg-muted/20 border-primary/30 text-lg py-6"
+                      />
+                    </div>
+
+                    {error && (
+                      <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center font-medium">
+                        {error}
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-8 text-xl rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+                    >
+                      {isSubmitting ? "Creando Colonia..." : "Registrarse"}
+                    </Button>
+                  </form>
+                  <p className="mt-6 text-xs text-center text-muted-foreground/60">
+                    ¿Ya tienes una cuenta? <Link href="/login" className="text-primary hover:underline">Inicia sesión aquí</Link>
+                  </p>
+                </>
+              ) : (
+                <div className="py-8 text-center animate-in fade-in zoom-in duration-500">
+                  <div className="flex justify-center mb-8">
+                    <div className="p-6 rounded-full bg-accent/20 amber-glow">
+                      <svg className="w-16 h-16 md:w-20 md:h-20 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground text-glow">¡Bienvenido!</h2>
+                  <p className="text-lg text-muted-foreground mb-10 text-pretty">
+                    Tu colonia ha sido fundada exitosamente, <strong>{username}</strong>.
+                    Estás siendo redirigido al panel de control...
+                  </p>
+                  <div className="space-y-4">
+                    <Button variant="outline" className="w-full py-6 text-xl rounded-2xl glass-card hover:bg-accent/10" asChild>
+                      <Link href="/dashboard">Ir al Dashboard</Link>
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  )
 }
