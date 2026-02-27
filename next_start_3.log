@@ -1,0 +1,28 @@
+
+> nidoria-web@0.1.0 start
+> next start
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 1674ms
+Error: Unauthorized
+    at t (.next/server/chunks/_c15d03cb._.js:1:19333)
+    at async w (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:1715)
+    at async d (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:4435)
+    at async i (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:5467)
+    at async k (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:6600)
+Error: Unauthorized
+    at t (.next/server/chunks/_c15d03cb._.js:1:19333)
+    at async w (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:1715)
+    at async d (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:4435)
+    at async i (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:5467)
+    at async k (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:6600)
+Error: Unauthorized
+    at t (.next/server/chunks/_c15d03cb._.js:1:19333)
+    at async w (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:1715)
+    at async d (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:4435)
+    at async i (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:5467)
+    at async k (.next/server/chunks/[root-of-the-server]__6b8d3857._.js:1:6600)
