@@ -10,6 +10,7 @@ import { Stats } from "@/components/stats"
 import { useSocket } from "@/context/SocketContext"
 import useSWR from "swr"
 import { toast } from "@/components/ui/use-toast"
+import Image from "next/image"
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
@@ -158,35 +159,45 @@ export default function InvestigacionesPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-12">
         <Navigation />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Panel de recursos */}
           <Stats />
 
-          {/* Navegación de regreso */}
-          <div className="mb-6">
-            <Link href="/dashboard">
-              <Button variant="outline" className="mb-4 bg-transparent">
-                ← Volver al Centro de Comando
-              </Button>
-            </Link>
-            <h1 className="text-4xl font-bold gradient-text mb-2">🔬 Investigaciones</h1>
-            <p className="text-xl text-muted-foreground">
-              Desarrolla tecnologías avanzadas para evolucionar tu especie
-            </p>
+           {/* Visual del Laboratorio (Nueva Sección) */}
+           <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-8 border border-border shadow-lg">
+            <Image
+              src="/ant-queen-chamber-golden-glow.png"
+              alt="Laboratorio de Investigación"
+              fill
+              className="object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent flex flex-col justify-end p-6 md:p-8">
+               <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-md mb-2">
+                 Cámara de Evolución
+               </h1>
+               <p className="text-white/90 text-lg max-w-2xl drop-shadow-sm">
+                 Desarrolla nuevas tecnologías para adaptar tu especie. Descubre mejoras genéticas, tácticas militares y avances en infraestructura.
+               </p>
+            </div>
           </div>
 
-          {/* Filtros por categoría */}
-          <div className="mb-6">
-            <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+             <div>
+                <h2 className="text-3xl font-bold gradient-text">🔬 Investigaciones</h2>
+                <p className="text-muted-foreground">Árbol tecnológico y evolutivo</p>
+             </div>
+             <div className="flex gap-2 flex-wrap">
               {categories.map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}
                   onClick={() => setSelectedCategory(category)}
                   className="rounded-full"
+                  size="sm"
                 >
                   {category}
                 </Button>
@@ -197,124 +208,139 @@ export default function InvestigacionesPage() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Lista de investigaciones */}
             <div className="xl:col-span-2 space-y-6">
-              <Card className="game-panel">
+              <Card className="game-panel border-accent/20">
                 <CardHeader>
-                  <CardTitle className="text-2xl gradient-text">🧪 Investigaciones Activas</CardTitle>
+                  <CardTitle className="text-2xl gradient-text flex items-center gap-2">
+                    🧪 Proyectos Activos
+                  </CardTitle>
                   <CardDescription>Tecnologías en desarrollo y completadas</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {filteredResearch.map((research) => (
                     <div
                       key={research.id}
-                      className={`tech-node p-6 cursor-pointer transition-all ${
-                        selectedResearch === research.id ? "ring-2 ring-primary" : ""
+                      className={`tech-node p-6 cursor-pointer transition-all hover:bg-accent/5 ${
+                        selectedResearch === research.id ? "ring-2 ring-primary bg-accent/10" : "bg-card/50"
                       }`}
                       onClick={() => setSelectedResearch(research.id)}
                     >
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-bold text-xl">{research.name}</h4>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs border-accent/50 text-accent-foreground">
                               {research.category}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">{research.description}</p>
-                          <p className="text-sm text-accent font-medium">{research.benefits}</p>
+                          <p className="text-sm text-muted-foreground">{research.description}</p>
                         </div>
                         <div className="text-right">
                           {research.completed ? (
-                            <Badge className="stat-badge bg-accent">✓ Completado</Badge>
+                            <Badge className="stat-badge bg-green-500/80 text-white">✓ Completado</Badge>
                           ) : (
-                            <Badge variant="outline" className="mb-2">
-                              {research.progress}%
-                            </Badge>
+                            <div className="flex flex-col items-end">
+                                <Badge variant="outline" className="mb-1">
+                                  {research.progress}%
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">{research.progress > 0 ? "En proceso" : "Disponible"}</span>
+                            </div>
                           )}
                         </div>
                       </div>
 
                       {!research.completed && (
-                        <div className="space-y-3">
-                          <div className="progress-bar h-4">
-                            <div
-                              className="progress-fill transition-all duration-300"
-                              style={{ width: `${research.progress}%` }}
-                            ></div>
-                          </div>
-                          {research.progress > 0 && (
-                            <p className="text-sm text-accent font-medium">⏱️ {research.timeLeft} restantes</p>
-                          )}
-                          {research.progress === 0 && (
+                        <div className="space-y-3 pt-4 border-t border-border/50">
+                          {research.progress > 0 ? (
+                             <div className="space-y-2">
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                   <span>Progreso de investigación</span>
+                                   <span>{research.timeLeft} restantes</span>
+                                </div>
+                                <div className="progress-bar h-3">
+                                  <div
+                                    className="progress-fill transition-all duration-300 bg-accent"
+                                    style={{ width: `${research.progress}%` }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-end mt-2">
+                                    <Button variant="ghost" size="sm" className="text-xs h-8 text-accent hover:text-accent/80">
+                                      Acelerar con Gemas
+                                    </Button>
+                                </div>
+                             </div>
+                          ) : (
                             <div className="space-y-3">
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Coste de Investigación</p>
                               <div className="flex gap-2 text-sm flex-wrap">
-                                <span className="bg-primary/20 px-3 py-1 rounded-full">
+                                <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
                                   🍯 {research.cost.food?.toLocaleString()}
                                 </span>
                                 {research.cost.wood && (
-                                  <span className="bg-secondary/20 px-3 py-1 rounded-full">
+                                  <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
                                     🪵 {research.cost.wood.toLocaleString()}
                                   </span>
                                 )}
-                                <span className="bg-accent/20 px-3 py-1 rounded-full">
+                                <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
                                   🍃 {research.cost.leaves?.toLocaleString()}
                                 </span>
                               </div>
-                              <Button className="w-full interactive-button" onClick={() => handleResearch(research.id)}>Iniciar Investigación</Button>
+                              <div className="flex justify-end mt-2">
+                                  <Button
+                                    className="interactive-button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleResearch(research.id);
+                                    }}
+                                  >
+                                    Iniciar Investigación
+                                  </Button>
+                              </div>
                             </div>
                           )}
-                          {research.progress > 0 && research.progress < 100 && (
-                            <Button variant="outline" size="sm" className="w-full bg-transparent">
-                              Acelerar con Gemas
-                            </Button>
-                          )}
                         </div>
+                      )}
+
+                      {research.completed && (
+                          <div className="pt-2 mt-2 border-t border-border/50">
+                             <p className="text-sm text-green-600 font-medium flex items-center gap-2">
+                                ✅ Beneficio activo: <span className="text-foreground font-normal">{research.benefits}</span>
+                             </p>
+                          </div>
                       )}
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              <Card className="game-panel">
+              <Card className="game-panel opacity-90">
                 <CardHeader>
-                  <CardTitle className="text-2xl gradient-text">🔒 Investigaciones Bloqueadas</CardTitle>
+                  <CardTitle className="text-2xl gradient-text flex items-center gap-2">
+                    🔒 Futuros Descubrimientos
+                  </CardTitle>
                   <CardDescription>Tecnologías avanzadas que requieren investigaciones previas</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {filteredLockedResearch.map((research) => (
-                    <div key={research.id} className="tech-node locked p-6">
-                      <div className="flex justify-between items-start mb-4">
+                    <div key={research.id} className="tech-node locked p-6 bg-muted/20 border-dashed border-2 border-muted">
+                      <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-bold text-xl opacity-70">{research.name}</h4>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-bold text-xl text-muted-foreground">{research.name}</h4>
                             <Badge variant="outline" className="text-xs opacity-60">
                               {research.category}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">{research.description}</p>
-                          <p className="text-sm text-accent/70 font-medium mb-2">{research.benefits}</p>
-                          <p className="text-xs text-destructive font-medium">📋 Requiere: {research.requirement}</p>
+                          <p className="text-sm text-muted-foreground">{research.description}</p>
                         </div>
                         <Badge variant="outline" className="opacity-60">
                           Bloqueado
                         </Badge>
                       </div>
-                      <div className="space-y-3">
-                        <div className="flex gap-2 text-sm flex-wrap opacity-60">
-                          <span className="bg-primary/10 px-3 py-1 rounded-full">
-                            🍯 {research.cost.food?.toLocaleString()}
-                          </span>
-                          {research.cost.wood && (
-                            <span className="bg-secondary/10 px-3 py-1 rounded-full">
-                              🪵 {research.cost.wood.toLocaleString()}
-                            </span>
-                          )}
-                          <span className="bg-accent/10 px-3 py-1 rounded-full">
-                            🍃 {research.cost.leaves?.toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground opacity-60">
-                          Tiempo de investigación: {research.researchTime}
-                        </p>
+
+                      <div className="mt-3 p-3 bg-destructive/10 rounded-md border border-destructive/20">
+                          <p className="text-xs text-destructive font-bold flex items-center gap-2">
+                             🚫 Requiere: {research.requirement}
+                          </p>
                       </div>
                     </div>
                   ))}
@@ -324,89 +350,76 @@ export default function InvestigacionesPage() {
 
             {/* Panel lateral */}
             <div className="space-y-6">
-              <Card className="game-panel">
+              <Card className="game-panel sticky top-24">
                 <CardHeader>
-                  <CardTitle className="text-xl">📊 Progreso Científico</CardTitle>
+                  <CardTitle className="text-xl">📊 Resumen Científico</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="p-3 rounded-lg bg-primary/20">
-                      <div className="text-2xl font-bold text-primary">{activeResearch.filter(r => r.completed).length}</div>
-                      <div className="text-sm text-muted-foreground">Completadas</div>
+                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                      <div className="text-2xl font-bold text-green-600">{activeResearch.filter(r => r.completed).length}</div>
+                      <div className="text-xs text-muted-foreground uppercase">Completadas</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-accent/20">
+                    <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
                       <div className="text-2xl font-bold text-accent">{activeResearch.filter(r => r.progress > 0 && !r.completed).length}</div>
-                      <div className="text-sm text-muted-foreground">En Progreso</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-secondary/20">
-                      <div className="text-2xl font-bold text-secondary">{lockedResearch.length}</div>
-                      <div className="text-sm text-muted-foreground">Bloqueadas</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/20">
-                      <div className="text-2xl font-bold">52%</div>
-                      <div className="text-sm text-muted-foreground">Progreso Total</div>
+                      <div className="text-xs text-muted-foreground uppercase">En Curso</div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {selectedResearch && (
-                <Card className="game-panel">
-                  <CardHeader>
-                    <CardTitle className="text-xl">🔍 Detalles de Investigación</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {(() => {
-                      const research = activeResearch.find((r) => r.id === selectedResearch)
-                      return research ? (
-                        <div className="space-y-4">
-                          <h3 className="font-bold text-lg gradient-text">{research.name}</h3>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span>Categoría:</span>
-                              <span className="font-bold">{research.category}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Progreso:</span>
-                              <span className="font-bold">{research.progress}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Estado:</span>
-                              <span
-                                className={`font-bold ${research.completed ? "text-accent" : research.progress > 0 ? "text-primary" : "text-muted-foreground"}`}
-                              >
-                                {research.completed
-                                  ? "Completado"
-                                  : research.progress > 0
-                                    ? "En Progreso"
-                                    : "Disponible"}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground mb-2">Beneficios:</p>
-                            <p className="text-sm text-accent">{research.benefits}</p>
-                          </div>
-                        </div>
-                      ) : null
-                    })()}
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card className="game-panel">
-                <CardHeader>
-                  <CardTitle className="text-xl">⚡ Laboratorio</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="text-center p-4 rounded-lg bg-primary/20">
-                    <div className="text-2xl font-bold text-primary">Nivel 1</div>
-                    <div className="text-sm text-muted-foreground">Velocidad: +10%</div>
+                  {/* Barra de progreso global */}
+                  <div className="space-y-2">
+                     <div className="flex justify-between text-xs">
+                        <span>Progreso Tecnológico</span>
+                        <span className="font-bold">52%</span>
+                     </div>
+                     <div className="h-2 w-full bg-secondary/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-primary to-accent w-[52%]"></div>
+                     </div>
                   </div>
-                  <Button className="w-full interactive-button">🔬 Mejorar Laboratorio</Button>
-                  <Button variant="outline" className="w-full bg-transparent">
-                    📋 Cola de Investigación
-                  </Button>
+
+                  {selectedResearch ? (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        {(() => {
+                          const research = activeResearch.find((r) => r.id === selectedResearch)
+                          if (!research) return null;
+                          return (
+                            <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
+                               <h3 className="font-bold text-lg text-primary mb-2">{research.name}</h3>
+                               <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between py-1 border-b border-primary/10">
+                                      <span className="text-muted-foreground">Categoría</span>
+                                      <span className="font-medium">{research.category}</span>
+                                  </div>
+                                  <div className="flex justify-between py-1 border-b border-primary/10">
+                                      <span className="text-muted-foreground">Estado</span>
+                                      <span className={`font-bold ${research.completed ? "text-green-600" : research.progress > 0 ? "text-accent" : "text-muted-foreground"}`}>
+                                        {research.completed ? "Completado" : research.progress > 0 ? "Investigando" : "Pendiente"}
+                                      </span>
+                                  </div>
+                               </div>
+                               <div className="mt-4 bg-background/50 p-3 rounded-lg">
+                                  <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Beneficio:</p>
+                                  <p className="text-sm text-foreground/90">{research.benefits}</p>
+                               </div>
+                            </div>
+                          );
+                        })()}
+                    </div>
+                  ) : (
+                     <div className="text-center p-6 text-muted-foreground text-sm italic bg-muted/10 rounded-xl">
+                        Selecciona una investigación para ver sus detalles.
+                     </div>
+                  )}
+
+                  <div className="pt-4 border-t border-border space-y-3">
+                     <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="text-lg font-bold text-primary">Nivel de Laboratorio: 1</div>
+                        <div className="text-xs text-muted-foreground">Velocidad Base: +10%</div>
+                     </div>
+                     <Button className="w-full" variant="outline">
+                        📋 Ver Cola de Investigación
+                     </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
