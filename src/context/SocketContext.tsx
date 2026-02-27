@@ -19,8 +19,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [data, setData] = useState<any>(null);
 
-    console.log(dbHost);
-
     useEffect(() => {
         if (!token) return;
         const newSocket = io(dbHost, {

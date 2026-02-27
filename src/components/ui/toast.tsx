@@ -41,13 +41,14 @@ const toastVariants = cva(
 
 const Toast = React.forwardRef<
   HTMLLIElement,
-  React.HTMLAttributes<HTMLLIElement> & VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+  React.HTMLAttributes<HTMLLIElement> &
+  VariantProps<typeof toastVariants> & { onOpenChange?: (open: boolean) => void } // Añadimos el tipo aquí
+>(({ className, variant, onOpenChange, ...props }, ref) => { // Extraemos onOpenChange aquí
   return (
     <li
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
-      {...props}
+      {...props} // Ahora onOpenChange ya no está en ...props y no llegará al <li>
     />
   )
 })
