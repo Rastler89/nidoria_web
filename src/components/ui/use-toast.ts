@@ -1,8 +1,8 @@
 // src/components/ui/use-toast.ts
 import * as React from "react"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 3
+const TOAST_REMOVE_DELAY = 1000
 
 type ToasterToast = {
   id: string
@@ -11,6 +11,7 @@ type ToasterToast = {
   action?: React.ReactNode
   variant?: "default" | "destructive"
   open?: boolean
+  duration?: number
   onOpenChange?: (open: boolean) => void
 } & React.ComponentPropsWithoutRef<"li">
 
@@ -138,7 +139,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
-function toast({ ...props }: Toast) {
+function toast({ duration = 5000, ...props }: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -154,11 +155,18 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      onOpenChange: (open: boolean) => { // Explicitly define the type for open
+      onOpenChange: (open: boolean) => {
         if (!open) dismiss()
       },
     },
   })
+
+  // Auto-dismiss logic
+  if (duration > 0) {
+    setTimeout(() => {
+      dismiss()
+    }, duration)
+  }
 
   return {
     id: id,
