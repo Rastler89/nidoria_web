@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiFetch";
+import { apiFetch } from "@/lib/api-client";
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from 'next/headers'
 
@@ -28,9 +28,10 @@ export async function POST(req: NextRequest) {
             "Authorization": `Bearer ${token ?? ""}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({resource: resource, amount: amount}),
+        body: JSON.stringify({ resource: resource, amount: amount }),
     })
 
     const data = await res.json()
+    console.log(data);
     return NextResponse.json(data)
 }
