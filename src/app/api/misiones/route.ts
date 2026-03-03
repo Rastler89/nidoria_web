@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api-client";
+import { apiFetch } from "@/lib/apiFetch";
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from 'next/headers'
 

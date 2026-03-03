@@ -190,6 +190,10 @@ export default function ConstruccionesPage() {
                           <Button
                             size="sm"
                             className="interactive-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStart(c.construction.id);
+                            }}
                           >
                             Construir ({c.cost.time} s)
                           </Button>
