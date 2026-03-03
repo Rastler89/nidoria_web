@@ -1,12 +1,11 @@
 'use client'
 
 import { useSocket } from "@/context/SocketContext";
-import { apiFetch } from "@/lib/apiFetch";
 import { useAuth } from "@/lib/auth";
 import { useResources } from "@/lib/useResources";
-import { useEffect, useState } from "react";
+import React, { memo } from "react";
 
-export function Stats() {
+const StatsComponent = () => {
   const { user, token, logout } = useAuth()
   const { data: sockedData } = useSocket()
   const { data: initialData } = useResources()
@@ -55,3 +54,5 @@ export function Stats() {
     </div>
   </div>
 }
+
+export const Stats = memo(StatsComponent)
