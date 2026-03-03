@@ -12,7 +12,7 @@ import useSWR from "swr"
 import { toast } from "@/components/ui/use-toast"
 import Image from "next/image"
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const fetcher = async (url: string) => { const res = await fetch(url); if (res.status === 401) { window.location.href = '/login'; throw new Error('Unauthorized'); } return res.json(); };
 
 interface Research {
   id: number
