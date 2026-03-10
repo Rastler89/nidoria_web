@@ -38,12 +38,44 @@ export default function ConstruccionesPage() {
 
   let disabledConstructions = [];
   let activeConstructions = [];
+
   if (serverData != undefined && serverData.error == undefined) {
     disabledConstructions = serverData.filter((c: any) => c.requirementsMet == false);
-    activeConstructions = serverData.filter((c: any) => c.requirementsMet == true);
+    activeConstructions = serverData.filter((c: any) => c.requirementsMet == true && c.type == "NEW");
+    if (socketData != undefined) {
+      socketData.buildings.map((b: any) => {
+        b.update = serverData.filter((c: any) => c.construction.id == b.id);
+      });
+    }
   }
-  console.log('disabled', disabledConstructions);
-  console.log('active', activeConstructions);
+  console.log(activeConstructions);
+
+  const handleStart = async (id: number) => {
+    try {
+      const res = await fetch('/api/constructions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ constructionId: id })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upgrade");
+      }
+
+      toast({
+        title: "Construcción iniciada",
+        description: "La construcción se está mejorando.",
+      });
+
+      mutate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar la mejora.",
+        variant: "destructive"
+      })
+    }
+  }
 
   const handleUpgrade = async (id: number) => {
     try {
@@ -123,6 +155,81 @@ export default function ConstruccionesPage() {
                   <CardDescription>Estructuras construidas y operativas en tu colonia</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {(socketData != undefined) && socketData.buildings.map((c: any) => (
+                    < div
+                      key={`owned-${c.update[0].construction.id}`}
+                      className={`tech-node p-6 cursor-pointer transition-all hover:bg-accent/5 ${selectedBuilding === c.update[0].construction.id ? "ring-2 ring-primary bg-accent/10" : "bg-card/50"
+                        }`}
+                      onClick={() => setSelectedBuilding(c.update[0].construction.id)}
+                    >
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <h4 className="font-bold text-xl">{c.update[0].construction.name}</h4>
+                            <Badge variant="secondary" className="text-xs">
+                              Nivel {c.level}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{c.update[0].construction.description}</p>
+                        </div>
+                        <div className="text-right flex flex-col items-end gap-1">
+                          {c.update[0].construction.upgrading && <Badge className="bg-yellow-500/80 text-white animate-pulse">⚡ Mejorando</Badge>}
+                        </div>
+                      </div>
+
+                      {/* Detalles desplegados o siempre visibles de forma resumida */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Beneficio Actual</p>
+                          <p className="text-sm text-primary font-medium">{c.update[0].construction.benefits}</p>
+                        </div>
+
+                        {c.update[0].construction.upgrading ? (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>Progreso</span>
+                              <span>{c.update[0].construction.timeLeft}</span>
+                            </div>
+                            <div className="progress-bar h-2">
+                              <div className="progress-fill w-3/4 animate-pulse"></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Coste de Mejora</p>
+                            <div className="flex gap-2 text-sm flex-wrap">
+                              <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+                                🍯 {c.update[0].cost.FOOD?.toLocaleString()}
+                              </span>
+                              <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+                                🪵 {c.update[0].cost.WOOD?.toLocaleString()}
+                              </span>
+                              <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
+                                🍃 {c.update[0].cost.LEAD.toLocaleString()}
+                              </span>
+                              <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+                                🐜  {c.update[0].cost.ANTS.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      {c.type != "NEW" && (
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            size="sm"
+                            className="interactive-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpgrade(c.update[0].construction.id);
+                            }}
+                          >
+                            Mejorar ({c.update[0].cost.time} s)
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                   {activeConstructions.map((c: any) => (
                     < div
                       key={c.construction.id}
@@ -149,7 +256,7 @@ export default function ConstruccionesPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
                         <div>
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Beneficio Actual</p>
-                          <p className="text-sm text-primary font-medium">{c.construction.benefits}</p>
+                          <p className="text-sm text-primary font-medium">{c.construction.effects.description}</p>
                         </div>
 
                         {c.construction.upgrading ? (
@@ -172,11 +279,9 @@ export default function ConstruccionesPage() {
                               <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
                                 🪵 {c.cost.WOOD?.toLocaleString()}
                               </span>
-                              {c.cost.LEAD && (
-                                <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
-                                  🍃 {c.cost.LEAD.toLocaleString()}
-                                </span>
-                              )}
+                              <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
+                                🍃 {c.cost.LEAD.toLocaleString()}
+                              </span>
                               <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
                                 🐜  {c.cost.ANTS.toLocaleString()}
                               </span>
@@ -267,11 +372,11 @@ export default function ConstruccionesPage() {
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
-                      <div className="text-3xl font-bold text-primary">{activeConstructions.length}</div>
+                      <div className="text-3xl font-bold text-primary">{socketData?.buildings?.length || 0}</div>
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Edificios</div>
                     </div>
                     <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
-                      <div className="text-3xl font-bold text-accent">{activeConstructions.filter(c => c.upgrading).length}</div>
+                      <div className="text-3xl font-bold text-accent">{socketData?.buildings.filter((c: any) => c.upgrading)?.length || 0}</div>
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Obras</div>
                     </div>
                   </div>
@@ -279,7 +384,7 @@ export default function ConstruccionesPage() {
                   {selectedBuilding ? (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
                       {(() => {
-                        const building = activeConstructions.find((b) => b.id === selectedBuilding);
+                        const building = activeConstructions.find((b: any) => b.id === selectedBuilding);
                         if (!building) return null;
                         return (
                           <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">

@@ -13,6 +13,7 @@ import { useSocket } from "@/context/SocketContext"
 import { toast } from "@/components/ui/use-toast"
 import { mutate } from "swr"
 import Image from "next/image"
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types"
 
 export default function MisionesPage() {
    const { data } = useSocket()
@@ -22,6 +23,8 @@ export default function MisionesPage() {
       wood: 0,
       leaves: 0,
    })
+
+   console.log(data);
 
    const misiones = [
       {
@@ -33,6 +36,8 @@ export default function MisionesPage() {
          description: "Las obreras recolectan néctar de flores cercanas",
          efficiency: data?.explorations?.find((r: any) => r.resourceType === 'FOOD')?.quantity,
          workersAssigned: data?.explorations?.find((r: any) => r.resourceType === 'FOOD')?.workers || 0,
+         createdAt: data?.explorations?.find((r: any) => r.resourceType == 'FOOD')?.createdAt || 0,
+         finishAt: data?.explorations?.find((r: any) => r.resourceType == 'FOOD')?.finishingAt || 0,
          production: 0,
          timeRemaining: null,
          difficulty: "Baja",
@@ -44,8 +49,10 @@ export default function MisionesPage() {
          name: "Tala de Ramas",
          icon: "🪵",
          description: "Cortar y transportar pequeñas ramas para construcción",
-         efficiency: 1,
-         workersAssigned: data?.resources?.find((r: any) => r.type === 'WOOD')?.workers || 0,
+         efficiency: data?.explorations?.find((r: any) => r.resourceType === 'WOOD')?.quantity,
+         workersAssigned: data?.explorations?.find((r: any) => r.resourceType === 'WOOD')?.workers || 0,
+         createdAt: data?.explorations?.find((r: any) => r.resourceType == 'WOOD')?.createdAt || 0,
+         finishAt: data?.explorations?.find((r: any) => r.resourceType == 'WOOD')?.finishingAt || 0,
          production: 0,
          timeRemaining: null,
          difficulty: "Media",
@@ -57,13 +64,34 @@ export default function MisionesPage() {
          name: "Cosecha de Hojas",
          icon: "🍃",
          description: "Recolectar hojas frescas para cultivo de hongos",
-         efficiency: 1,
-         workersAssigned: data?.resources?.find((r: any) => r.type === 'LEAF')?.workers || 0,
+         efficiency: data?.explorations?.find((r: any) => r.resourceType === 'LEAD')?.quantity,
+         workersAssigned: data?.explorations?.find((r: any) => r.resourceType === 'LEAD')?.workers || 0,
+         createdAt: data?.explorations?.find((r: any) => r.resourceType == 'LEAD')?.createdAt || 0,
+         finishAt: data?.explorations?.find((r: any) => r.resourceType == 'LEAD')?.finishingAt || 0,
          production: 0,
          timeRemaining: null,
          difficulty: "Baja",
       },
    ]
+
+   const porcentaje = (mision: any) => {
+      const now = Date.now();
+
+      const inicio = new Date(mision.createdAt).getTime()
+      const fin = new Date(mision.finishAt).getTime();
+
+      if (inicio >= fin) {
+         return 100;
+      }
+
+      const totalDuration = fin - inicio;
+      const elapsed = now - inicio;
+
+      const ratio = Math.min(Math.max(elapsed / totalDuration, 0), 1);
+
+      return Math.round(ratio * 100);
+
+   }
 
    const handleAssignWorkers = (resource: string, amount: number) => {
       // Basic validation against total ants
@@ -207,7 +235,7 @@ export default function MisionesPage() {
                                     </div>*/}
                                  </div>
 
-                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4 pt-4 border-t border-border/50">
                                     <div className="space-y-2">
                                        <div className="flex justify-between text-sm">
                                           <span className="text-muted-foreground">Obreras Asignadas:</span>
@@ -223,12 +251,15 @@ export default function MisionesPage() {
                                                 <span>Estado: Recolectando</span>
                                                 <span className="animate-pulse text-green-500">● Activo</span>
                                              </div>
-                                             <Progress value={100} className="h-1.5" />
+                                             <div className="flex justify-between text-xs mb-1">
+                                                <span>{mision.finishAt}</span>
+                                             </div>
+                                             <Progress value={porcentaje(mision)} className="h-1.5" />
                                           </div>
                                        )}
                                     </div>
 
-                                    <div className="bg-background/40 p-3 rounded-lg border border-border/50 space-y-3">
+                                    <div className="bg-background/40 p-3 rounded-lg border border-border/50 space-y-2">
                                        <label className="text-xs font-bold uppercase text-muted-foreground">Asignar Obreras</label>
                                        <div className="flex gap-2">
                                           <Input
