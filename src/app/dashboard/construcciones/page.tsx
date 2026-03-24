@@ -7,208 +7,394 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Stats } from "@/components/stats"
+import { useSocket } from "@/context/SocketContext"
+import useSWR from "swr"
+import { toast } from "@/components/ui/use-toast"
+import Image from "next/image"
+import { Progress } from "@/components/ui/progress";
 
-export default function ConstruccionesPage() {
-  const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null)
 
-  const gameData = {
-    resources: {
-      eggs: 234,
-      larvae: 156,
-      workers: 1247,
-      food: 2340,
-      wood: 890,
-      leaves: 567,
-    },
-    constructions: [
-      {
-        id: 1,
-        name: "Cámara de Cría",
-        level: 3,
-        upgrading: false,
-        maxLevel: 10,
-        cost: { food: 500, wood: 200 },
-        description: "Aumenta la producción de larvas en un 15% por nivel",
-        benefits: "Producción actual: +45% larvas/hora",
-        upgradeTime: "2h 30m",
-      },
-      {
-        id: 2,
-        name: "Almacén de Comida",
-        level: 5,
-        upgrading: true,
-        maxLevel: 15,
-        cost: { wood: 800, leaves: 300 },
-        description: "Incrementa la capacidad de almacenamiento de comida",
-        benefits: "Capacidad actual: 12,500 unidades",
-        upgradeTime: "1h 45m",
-        timeLeft: "1h 23m",
-      },
-      {
-        id: 3,
-        name: "Túneles de Defensa",
-        level: 2,
-        upgrading: false,
-        maxLevel: 8,
-        cost: { wood: 1200, food: 400 },
-        description: "Mejora las defensas de la colonia contra ataques",
-        benefits: "Defensa actual: +20% resistencia",
-        upgradeTime: "3h 15m",
-      },
-      {
-        id: 4,
-        name: "Laboratorio",
-        level: 1,
-        upgrading: false,
-        maxLevel: 12,
-        cost: { leaves: 600, wood: 400 },
-        description: "Permite investigaciones avanzadas y acelera el progreso",
-        benefits: "Velocidad investigación: +10%",
-        upgradeTime: "4h 00m",
-      },
-      {
-        id: 5,
-        name: "Cuartel",
-        level: 2,
-        upgrading: false,
-        maxLevel: 10,
-        cost: { food: 1000, wood: 600 },
-        description: "Entrena soldados más rápido y desbloquea nuevos tipos",
-        benefits: "Velocidad entrenamiento: +20%",
-        upgradeTime: "2h 45m",
-      },
-    ],
-    lockedBuildings: [
-      {
-        id: 6,
-        name: "Cámara Real",
-        level: 0,
-        requirement: "Laboratorio Nivel 3",
-        cost: { food: 2000, wood: 1500, leaves: 800 },
-        description: "Permite criar reinas especializadas para expandir el territorio",
-        benefits: "Desbloquea: Expansión territorial, Reinas especializadas",
-        upgradeTime: "8h 00m",
-      },
-      {
-        id: 7,
-        name: "Torre de Vigilancia",
-        level: 0,
-        requirement: "Túneles de Defensa Nivel 5",
-        cost: { wood: 1800, leaves: 600 },
-        description: "Detecta ataques enemigos con anticipación",
-        benefits: "Alerta temprana: +30 minutos de preparación",
-        upgradeTime: "5h 30m",
-      },
-      {
-        id: 8,
-        name: "Granja de Hongos",
-        level: 0,
-        requirement: "Investigación: Cultivo Avanzado",
-        cost: { leaves: 1200, food: 800 },
-        description: "Produce comida automáticamente sin necesidad de obreras",
-        benefits: "Producción automática: 50 comida/hora",
-        upgradeTime: "6h 15m",
-      },
-      {
-        id: 9,
-        name: "Centro de Comunicaciones",
-        level: 0,
-        requirement: "Investigación: Comunicación Avanzada",
-        cost: { leaves: 1500, wood: 1000 },
-        description: "Permite coordinar ataques con otras colonias aliadas",
-        benefits: "Desbloquea: Alianzas, Ataques coordinados",
-        upgradeTime: "7h 00m",
-      },
-    ],
+const fetcher = (url: string) => fetch(url).then(r => r.json());
+
+interface Construction {
+  id: number
+  name: string
+  level: number
+  upgrading: boolean
+  maxLevel: number
+  cost: {
+    food: number
+    wood: number
+    leaves?: number
+  }
+  description: string
+  benefits: string
+  upgradeTime: string
+  timeLeft?: string
+}
+
+const formatTime = (seconds: number) => {
+  if (!seconds) return "0s";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  const parts = [];
+  if (h > 0) parts.push(`${h}h`);
+  if (m > 0) parts.push(`${m}m`);
+  if (s > 0 || parts.length === 0) parts.push(`${s}s`);
+
+  return parts.join(" ");
+};
+
+const coste_mejora = (c: any) => {
+
+  if (c.update[0].construction.maxLevel === c.level) {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Coste de Mejora</p>
+        <div className="flex gap-2 text-sm flex-wrap">
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+            MAX
+          </span>
+        </div>
+      </div>
+    )
   }
 
+  if (c.update[0].construction.upgrading) {
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>Progreso</span>
+          <span>{c.update[0].construction.timeLeft}</span>
+        </div>
+        <div className="progress-bar h-2">
+          <div className="progress-fill w-3/4 animate-pulse"></div>
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Coste de Mejora</p>
+        <div className="flex gap-2 text-sm flex-wrap">
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+            🍯 {c.update[0].cost.FOOD?.toLocaleString()}
+          </span>
+          <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+            🪵 {c.update[0].cost.WOOD?.toLocaleString()}
+          </span>
+          <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
+            🍃 {c.update[0].cost.LEAD.toLocaleString()}
+          </span>
+          <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+            🐜  {c.update[0].cost.ANTS.toLocaleString()}
+          </span>
+        </div>
+      </div>
+    )
+  }
+}
+
+export default function ConstruccionesPage() {
+  const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
+  const { data: socketData } = useSocket()
+  const { data: constructionsData, mutate } = useSWR('/api/constructions', fetcher)
+
+  let disabledConstructions = [];
+  let activeConstructions = [];
+
+  if (constructionsData != undefined && constructionsData.error == undefined) {
+    disabledConstructions = constructionsData.filter((c: any) => c.requirementsMet == false);
+    activeConstructions = constructionsData.filter((c: any) => c.requirementsMet == true && c.type == "NEW");
+    if (socketData != undefined) {
+      socketData.buildings.map((b: any) => {
+        b.update = constructionsData.filter((c: any) => c.instanceId == b.id);
+      });
+    }
+  }
+  console.log('api', constructionsData);
+  console.log('socket', socketData);
+
+  const handleStart = async (id: number) => {
+    try {
+      const res = await fetch('/api/constructions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ constructionId: id })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upgrade");
+      }
+
+      toast({
+        title: "Construcción iniciada",
+        description: "La construcción se está mejorando.",
+      });
+
+      mutate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar la mejora.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleUpgrade = async (id: number) => {
+    try {
+      const res = await fetch('/api/constructions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ constructionId: id })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upgrade");
+      }
+
+      toast({
+        title: "Mejora iniciada",
+        description: "La construcción se está mejorando.",
+      });
+
+      mutate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar la mejora.",
+        variant: "destructive"
+      });
+    }
+  }
+  console.log(selectedBuilding)
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-12">
         <Navigation />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Panel de recursos */}
           <Stats />
 
-          {/* Navegación de regreso */}
-          <div className="mb-6">
+          {/* Visual del Nido (Nueva Sección) */}
+          <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-8 border border-border shadow-lg">
+            <Image
+              src="/ant-colony-workers-building-tunnels.png"
+              alt="Interior del Nido"
+              fill
+              className="object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent flex flex-col justify-end p-6 md:p-8">
+              <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-md mb-2">
+                Nido Central
+              </h1>
+              <p className="text-white/90 text-lg max-w-2xl drop-shadow-sm">
+                Gestiona el crecimiento de tu colonia. Construye nuevas cámaras, almacenes y defensas para asegurar la supervivencia de la reina.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-3xl font-bold gradient-text">🧱 Construcciones</h2>
+              <p className="text-muted-foreground">Administra la infraestructura de tu imperio</p>
+            </div>
             <Link href="/dashboard">
-              <Button variant="outline" className="mb-4 bg-transparent">
+              <Button variant="outline" className="bg-background">
                 ← Volver al Centro de Comando
               </Button>
             </Link>
-            <h1 className="text-4xl font-bold gradient-text mb-2">🏗️ Construcciones</h1>
-            <p className="text-xl text-muted-foreground">
-              Mejora y construye nuevas estructuras para fortalecer tu colonia
-            </p>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Lista de construcciones */}
             <div className="xl:col-span-2 space-y-6">
-              <Card className="game-panel">
+              <Card className="game-panel border-primary/20">
                 <CardHeader>
-                  <CardTitle className="text-2xl gradient-text">🏠 Edificios Activos</CardTitle>
+                  <CardTitle className="text-2xl gradient-text flex items-center gap-2">
+                    🏠 Edificios Construidos
+                  </CardTitle>
                   <CardDescription>Estructuras construidas y operativas en tu colonia</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {gameData.constructions.map((construction) => (
-                    <div
-                      key={construction.id}
-                      className={`tech-node p-6 cursor-pointer transition-all ${
-                        selectedBuilding === construction.id ? "ring-2 ring-primary" : ""
-                      }`}
-                      onClick={() => setSelectedBuilding(construction.id)}
+                  {(socketData != undefined) && socketData.buildings.map((c: any) => (
+                    < div
+                      key={`owned-${c.id}`}
+                      className={`tech-node p-6 cursor-pointer transition-all hover:bg-accent/5 ${selectedBuilding === `owned-${c.id}` ? "ring-2 ring-primary bg-accent/10" : "bg-card/50"
+                        }`}
+                      onClick={() => setSelectedBuilding(`owned-${c.id}`)}
                     >
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                         <div className="flex-1">
-                          <h4 className="font-bold text-xl mb-2">{construction.name}</h4>
-                          <p className="text-sm text-muted-foreground mb-2">{construction.description}</p>
-                          <p className="text-sm text-accent font-medium">{construction.benefits}</p>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h4 className="font-bold text-xl">{c.name}</h4>
+                            {c.status === 'COMPLETED' && (
+                              <Badge variant="secondary" className="text-xs">
+                                Nivel {c.update[0]?.construction.maxLevel === c.level ? 'Max' : c.level}
+                              </Badge>
+                            )}
+                          </div>
+                          {c.status === 'COMPLETED' && (
+                            <p className="text-sm text-muted-foreground">{c.update[0].construction.description}</p>
+                          )}
                         </div>
-                        <div className="text-right">
-                          <Badge variant="secondary" className="stat-badge mb-2">
-                            Nivel {construction.level}/{construction.maxLevel}
-                          </Badge>
-                          {construction.upgrading && <Badge className="bg-accent block">⚡ Mejorando</Badge>}
+                        <div className="text-right flex flex-col items-end gap-1">
+                          {c.status === 'BUILDING' && <Badge className="bg-yellow-500/80 text-white animate-pulse">⚡ En construcción</Badge>}
                         </div>
                       </div>
 
-                      {construction.upgrading ? (
-                        <div className="space-y-3">
-                          <div className="progress-bar h-4">
-                            <div className="progress-fill w-3/4"></div>
+                      {c.status === 'BUILDING' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                          <div className="md:col-span-2 flex justify-end">
+                            <div className="flex flex-col gap-2 items-end">
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Finaliza el</p>
+                              <Badge variant="outline" className="bg-background py-1.5 px-3 border-primary/20 flex items-center gap-2">
+                                <span className="text-muted-foreground">⏳</span>
+                                <span className="font-semibold text-primary">
+                                  {c.finishingAt ? new Date(c.finishingAt).toLocaleString('es-ES', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  }) : 'Calculando...'}
+                                </span>
+                              </Badge>
+                            </div>
                           </div>
-                          <p className="text-sm text-accent font-medium">⏱️ {construction.timeLeft} restantes</p>
-                          <Button variant="outline" size="sm" className="w-full bg-transparent">
-                            Acelerar con Gemas
+                        </div>
+                      )}
+                      {c.status == 'COMPLETED' && (
+                        <div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                            <div>
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Beneficio Actual</p>
+                              <p className="text-sm text-primary font-medium">{c.update[0].construction.benefits}</p>
+                            </div>
+                            {coste_mejora(c)}
+                          </div>
+                          {(c.type != "NEW" && c.update[0].construction.maxLevel > c.level) && (
+                            <div className="mt-4 flex justify-end">
+                              <Button
+                                size="sm"
+                                className="interactive-button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpgrade(c.update[0].construction.id);
+                                }}
+                              >
+                                Mejorar ({formatTime(c.update[0].cost.time)})
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="game-panel border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-2xl gradient-text flex items-center gap-2">
+                    🏗️ Por Construir
+                  </CardTitle>
+                  <CardDescription>Estructuras construidas y operativas en tu colonia</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {activeConstructions.map((c: any) => (
+                    < div
+                      key={`new-${c.construction.id}`}
+                      className={`tech-node p-6 cursor-pointer transition-all hover:bg-accent/5 ${selectedBuilding === `new-${c.construction.id}` ? "ring-2 ring-primary bg-accent/10" : "bg-card/50"
+                        }`}
+                      onClick={() => setSelectedBuilding(`new-${c.construction.id}`)}
+                    >
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-1">
+                            <h4 className="font-bold text-xl">{c.construction.name}</h4>
+                            <Badge variant="secondary" className="text-xs">
+                              Nivel {c.level}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{c.construction.description}</p>
+                        </div>
+                        <div className="text-right flex flex-col items-end gap-1">
+                          {c.construction.upgrading && <Badge className="bg-yellow-500/80 text-white animate-pulse">⚡ En construcción</Badge>}
+                        </div>
+                      </div>
+
+                      {/* Detalles desplegados o siempre visibles de forma resumida */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Beneficio Actual</p>
+                          <p className="text-sm text-primary font-medium">{c.construction.effects.description}</p>
+                        </div>
+
+                        {c.construction.upgrading ? (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>Progreso</span>
+                              <span>{c.construction.timeLeft}</span>
+                            </div>
+                            <div className="progress-bar h-2">
+                              <div className="progress-fill w-3/4 animate-pulse"></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Coste de Mejora</p>
+                            <div className="flex gap-2 text-sm flex-wrap">
+                              <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+                                🍯 {c.cost.FOOD?.toLocaleString()}
+                              </span>
+                              <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+                                🪵 {c.cost.WOOD?.toLocaleString()}
+                              </span>
+                              <span className="bg-green-500/10 text-green-600 px-2 py-1 rounded text-xs font-medium">
+                                🍃 {c.cost.LEAD.toLocaleString()}
+                              </span>
+                              <span className="bg-secondary/10 text-secondary px-2 py-1 rounded text-xs font-medium">
+                                🐜  {c.cost.ANTS.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {c.type == "NEW" && (
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            size="sm"
+                            className="interactive-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStart(c.construction.id);
+                            }}
+                          >
+                            Construir ({formatTime(c.cost.time)})
                           </Button>
                         </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="flex gap-2 text-sm flex-wrap">
-                            <span className="bg-primary/20 px-3 py-1 rounded-full">
-                              🍯 {construction.cost.food?.toLocaleString()}
-                            </span>
-                            <span className="bg-secondary/20 px-3 py-1 rounded-full">
-                              🪵 {construction.cost.wood?.toLocaleString()}
-                            </span>
-                            {construction.cost.leaves && (
-                              <span className="bg-accent/20 px-3 py-1 rounded-full">
-                                🍃 {construction.cost.leaves.toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button className="flex-1 interactive-button">
-                              Mejorar a Nivel {construction.level + 1}
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              ℹ️
-                            </Button>
-                          </div>
-                          <p className="text-xs text-muted-foreground">Tiempo de mejora: {construction.upgradeTime}</p>
+                      )}
+
+                      {c.type != "NEW" && (
+                        <div className="mt-4 flex justify-end">
+                          <Button
+                            size="sm"
+                            className="interactive-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpgrade(c.construction.id);
+                            }}
+                          >
+                            Mejorar ({formatTime(c.cost.time)})
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -216,42 +402,38 @@ export default function ConstruccionesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="game-panel">
+              <Card className="game-panel opacity-90">
                 <CardHeader>
-                  <CardTitle className="text-2xl gradient-text">🔒 Edificios Bloqueados</CardTitle>
+                  <CardTitle className="text-2xl gradient-text flex items-center gap-2">
+                    🔒 Proyectos Futuros
+                  </CardTitle>
                   <CardDescription>
-                    Estructuras avanzadas que requieren investigación o construcciones previas
+                    Estructuras avanzadas disponibles tras cumplir requisitos
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {gameData.lockedBuildings.map((building) => (
-                    <div key={building.id} className="tech-node locked p-6">
-                      <div className="flex justify-between items-start mb-4">
+                  {disabledConstructions.map((building: any) => (
+                    <div key={`locked-${building.construction.id}`} className="tech-node locked p-6 bg-muted/20 border-dashed border-2 border-muted">
+                      <div className="flex justify-between items-start mb-2">
                         <div className="flex-1">
-                          <h4 className="font-bold text-xl mb-2 opacity-70">{building.name}</h4>
-                          <p className="text-sm text-muted-foreground mb-2">{building.description}</p>
-                          <p className="text-sm text-accent/70 font-medium mb-2">{building.benefits}</p>
-                          <p className="text-xs text-destructive font-medium">📋 Requiere: {building.requirement}</p>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-xl text-muted-foreground">{building.construction.name}</h4>
+                            <Badge variant="outline" className="text-xs">Bloqueado</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{building.description}</p>
                         </div>
-                        <Badge variant="outline" className="opacity-60">
-                          Bloqueado
-                        </Badge>
                       </div>
-                      <div className="space-y-3">
-                        <div className="flex gap-2 text-sm flex-wrap opacity-60">
-                          <span className="bg-primary/10 px-3 py-1 rounded-full">
-                            🍯 {building.cost.food?.toLocaleString()}
-                          </span>
-                          <span className="bg-secondary/10 px-3 py-1 rounded-full">
-                            🪵 {building.cost.wood?.toLocaleString()}
-                          </span>
-                          <span className="bg-accent/10 px-3 py-1 rounded-full">
-                            🍃 {building.cost.leaves?.toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground opacity-60">
-                          Tiempo de construcción: {building.upgradeTime}
+                      <div className="mt-3 p-3 bg-destructive/10 rounded-md border border-destructive/20">
+                        <p className="text-xs text-destructive font-bold flex items-center gap-2">
+                          🚫 Requiere:
                         </p>
+                        <ul className="list-disc list-inside ml-4 space-y-1">
+                          {building.requirements.map((req: any) => (
+                            <li key={req.id}>
+                              <span className="font-semibold">{req.requiredName}</span> - Nivel: {req.requiredLevel}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   ))}
@@ -259,100 +441,59 @@ export default function ConstruccionesPage() {
               </Card>
             </div>
 
-            {/* Panel de información detallada */}
+            {/* Panel lateral de información y estadísticas */}
             <div className="space-y-6">
-              <Card className="game-panel">
+              <Card className="game-panel sticky top-24">
                 <CardHeader>
-                  <CardTitle className="text-xl">📊 Estadísticas de Construcción</CardTitle>
+                  <CardTitle className="text-xl">📊 Resumen de Colonia</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="p-3 rounded-lg bg-primary/20">
-                      <div className="text-2xl font-bold text-primary">5</div>
-                      <div className="text-sm text-muted-foreground">Activos</div>
+                    <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
+                      <div className="text-3xl font-bold text-primary">{socketData?.buildings?.filter((c: any) => c.status === 'COMPLETED')?.length || 0}</div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Edificios</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-accent/20">
-                      <div className="text-2xl font-bold text-accent">1</div>
-                      <div className="text-sm text-muted-foreground">Mejorando</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-secondary/20">
-                      <div className="text-2xl font-bold text-secondary">4</div>
-                      <div className="text-sm text-muted-foreground">Bloqueados</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/20">
-                      <div className="text-2xl font-bold">15</div>
-                      <div className="text-sm text-muted-foreground">Nivel Total</div>
+                    <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
+                      <div className="text-3xl font-bold text-accent">{socketData?.buildings.filter((c: any) => c.status === 'BUILDING')?.length || 0}</div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">Obras</div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {selectedBuilding && (
-                <Card className="game-panel">
-                  <CardHeader>
-                    <CardTitle className="text-xl">🔍 Detalles del Edificio</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {(() => {
-                      const building = gameData.constructions.find((b) => b.id === selectedBuilding)
-                      return building ? (
-                        <div className="space-y-4">
-                          <h3 className="font-bold text-lg gradient-text">{building.name}</h3>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span>Nivel Actual:</span>
-                              <span className="font-bold">{building.level}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Nivel Máximo:</span>
-                              <span className="font-bold">{building.maxLevel}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Estado:</span>
-                              <span className={`font-bold ${building.upgrading ? "text-accent" : "text-primary"}`}>
-                                {building.upgrading ? "Mejorando" : "Operativo"}
-                              </span>
+                  {selectedBuilding && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                      {(() => {
+                        const building = activeConstructions.find((b: any) => b.id === selectedBuilding);
+                        if (!building) return null;
+                        return (
+                          <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
+                            <h3 className="font-bold text-lg text-primary mb-2">{building.name}</h3>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between py-1 border-b border-primary/10">
+                                <span className="text-muted-foreground">Nivel Máximo</span>
+                                <span className="font-medium">{building.maxLevel}</span>
+                              </div>
+                              <div className="flex justify-between py-1 border-b border-primary/10">
+                                <span className="text-muted-foreground">Tiempo Mejora</span>
+                                <span className="font-medium">{building.upgradeTime}</span>
+                              </div>
                             </div>
                           </div>
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground mb-2">Beneficios del siguiente nivel:</p>
-                            <p className="text-sm text-accent">
-                              {building.name === "Cámara de Cría" &&
-                                `Producción: +${(building.level + 1) * 15}% larvas/hora`}
-                              {building.name === "Almacén de Comida" &&
-                                `Capacidad: ${(building.level + 1) * 2500} unidades`}
-                              {building.name === "Túneles de Defensa" &&
-                                `Defensa: +${(building.level + 1) * 10}% resistencia`}
-                              {building.name === "Laboratorio" &&
-                                `Investigación: +${(building.level + 1) * 10}% velocidad`}
-                              {building.name === "Cuartel" && `Entrenamiento: +${(building.level + 1) * 10}% velocidad`}
-                            </p>
-                          </div>
-                        </div>
-                      ) : null
-                    })()}
-                  </CardContent>
-                </Card>
-              )}
+                        );
+                      })()}
+                    </div>
+                  )}
 
-              <Card className="game-panel">
-                <CardHeader>
-                  <CardTitle className="text-xl">⚡ Acciones Rápidas</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button className="w-full interactive-button">🔄 Mejorar Todo Disponible</Button>
-                  <Button variant="outline" className="w-full bg-transparent">
-                    ⏸️ Pausar Construcciones
-                  </Button>
-                  <Button variant="outline" className="w-full bg-transparent">
-                    📋 Ver Cola de Construcción
-                  </Button>
+                  <div className="space-y-3 pt-4 border-t border-border">
+                    <Button className="w-full" variant="secondary">
+                      Ver Árbol Tecnológico (Próximamente)
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
           </div>
         </main>
-      </div>
-    </ProtectedRoute>
+      </div >
+    </ProtectedRoute >
   )
 }

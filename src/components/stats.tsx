@@ -1,19 +1,19 @@
 'use client'
 
 import { useSocket } from "@/context/SocketContext";
-import { apiFetch } from "@/lib/apiFetch";
 import { useAuth } from "@/lib/auth";
 import { useResources } from "@/lib/useResources";
-import { useEffect, useState } from "react";
+import React, { memo } from "react";
 
-export function Stats() {
-  const { user, token, logout } = useAuth()
+const StatsComponent = () => {
+  const { user, token, logout, refresh } = useAuth()
   const { data: sockedData } = useSocket()
-  const { data: initialData } = useResources()
 
-  const displayData = { ...initialData, ...sockedData }
-
-  console.log(displayData);
+  if (sockedData != null) {
+    if (sockedData.statusCode == 401) {
+      refresh();
+    }
+  }
 
   type Resources = {
     eggs: number;
@@ -23,35 +23,37 @@ export function Stats() {
   };
 
   const getResourceStock = (type: string) => {
-    return displayData?.resources?.find((r: { type: string; }) => r.type === type)?.stock ?? "--";
+    return sockedData?.resources?.find((r: { type: string; }) => r.type === type)?.stock ?? "--";
   }
 
   return <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 border border-primary/30 glow-effect">
     <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🥚 Huevos</div>
-        <div className="text-2xl font-bold">{displayData?.eggs ?? "--"}</div>
+        <div className="text-2xl font-bold">{sockedData?.stats.eggs ?? "--"}</div>
       </div>
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🐛 Larvas</div>
-        <div className="text-2xl font-bold">{displayData?.larva ?? "--"}</div>
+        <div className="text-2xl font-bold">{sockedData?.stats.larva ?? "--"}</div>
       </div>
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🐜 Obreras</div>
-        <div className="text-2xl font-bold">{displayData?.ants ?? "--"}</div>
+        <div className="text-2xl font-bold">{sockedData?.stats.ants ?? "--"}</div>
       </div>
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🍯 Comida</div>
-        <div className="text-2xl font-bold">{getResourceStock('FOOD')}</div>
+        <div className="text-2xl font-bold">{getResourceStock('Comida')}</div>
       </div>
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🪵 Madera</div>
-        <div className="text-2xl font-bold">{getResourceStock('WOOD')}</div>
+        <div className="text-2xl font-bold">{getResourceStock('Madera')}</div>
       </div>
       <div className="resource-counter text-center">
         <div className="text-sm opacity-90">🍃 Hojas</div>
-        <div className="text-2xl font-bold">{getResourceStock('LEAD')}</div>
+        <div className="text-2xl font-bold">{getResourceStock('Hojas')}</div>
       </div>
     </div>
   </div>
 }
+
+export const Stats = memo(StatsComponent)
