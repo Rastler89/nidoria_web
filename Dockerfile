@@ -1,10 +1,13 @@
 # Etapa de build
 FROM node:20-alpine AS builder
 
+# Se añade libc6-compat porque es requerido por algunos módulos nativos en Alpine (como SWC de Next.js)
+RUN apk add --no-cache libc6-compat
+
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 RUN npm run build
