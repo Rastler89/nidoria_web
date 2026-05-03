@@ -57,11 +57,19 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             })
         });
 
+        newSocket.on('auth_error', (data) => {
+            toast({
+                variant: "destructive",
+                title: "Sesión caducada",
+                description: data.message || "Por favor, vuelve a iniciar sesión.",
+            });
+            setIsConnected(false);
+            newSocket.disconnect(); // Aseguramos que se detiene
+        });
+
         newSocket.on('disconnect', (reason) => {
             setIsConnected(false);
-            if (reason === 'io server disconnect') {
-                newSocket.connect();
-            }
+            console.log('Socket desconectado:', reason);
         });
 
         setSocket(newSocket);

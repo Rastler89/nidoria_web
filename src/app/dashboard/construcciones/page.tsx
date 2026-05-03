@@ -16,22 +16,6 @@ import { Progress } from "@/components/ui/progress";
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-interface Construction {
-  id: number
-  name: string
-  level: number
-  upgrading: boolean
-  maxLevel: number
-  cost: {
-    food: number
-    wood: number
-    leaves?: number
-  }
-  description: string
-  benefits: string
-  upgradeTime: string
-  timeLeft?: string
-}
 
 const formatTime = (seconds: number) => {
   if (!seconds) return "0s";
@@ -48,6 +32,7 @@ const formatTime = (seconds: number) => {
 };
 
 const coste_mejora = (c: any) => {
+  if (!c.update || c.update.length === 0) return null;
 
   if (c.update[0].construction.maxLevel === c.level) {
     return (
@@ -114,8 +99,6 @@ export default function ConstruccionesPage() {
       });
     }
   }
-  console.log('api', constructionsData);
-  console.log('socket', socketData);
 
   const handleStart = async (id: number) => {
     try {
@@ -235,11 +218,11 @@ export default function ConstruccionesPage() {
                             <h4 className="font-bold text-xl">{c.name}</h4>
                             {c.status === 'COMPLETED' && (
                               <Badge variant="secondary" className="text-xs">
-                                Nivel {c.update[0]?.construction.maxLevel === c.level ? 'Max' : c.level}
+                                Nivel {c?.update?.[0]?.construction?.maxLevel === c.level ? 'Max' : c.level}
                               </Badge>
                             )}
                           </div>
-                          {c.status === 'COMPLETED' && (
+                          {c.status === 'COMPLETED' && c.update?.[0] && (
                             <p className="text-sm text-muted-foreground">{c.update[0].construction.description}</p>
                           )}
                         </div>
@@ -274,11 +257,11 @@ export default function ConstruccionesPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50">
                             <div>
                               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Beneficio Actual</p>
-                              <p className="text-sm text-primary font-medium">{c.update[0].construction.benefits}</p>
+                              <p className="text-sm text-primary font-medium">{c.update?.[0]?.construction?.benefits}</p>
                             </div>
                             {coste_mejora(c)}
                           </div>
-                          {(c.type != "NEW" && c.update[0].construction.maxLevel > c.level) && (
+                          {(c.type != "NEW" && c.update?.[0] && c.update[0].construction.maxLevel > c.level) && (
                             <div className="mt-4 flex justify-end">
                               <Button
                                 size="sm"
