@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     const token = (await cookieStore).get('auth_token')?.value
 
     try {
+        console.log('hola');
         const res = await apiFetch("investigations", {
             headers: {
                 "Authorization": `Bearer ${token ?? ""}`,
@@ -14,7 +15,6 @@ export async function GET(req: NextRequest) {
         })
 
         if (!res.ok) {
-            // Return empty array or mock data if endpoint fails, but for now error
             return NextResponse.json({ error: "Failed to fetch investigations" }, { status: res.status })
         }
 

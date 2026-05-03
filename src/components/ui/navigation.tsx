@@ -65,10 +65,10 @@ export function Navigation() {
                   Exploraciones
                 </Link>
                 <Link
-                  href="/dashboard/ejercito"
+                  href="/dashboard/unidades"
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary",
-                    isActive("/dashboard/ejercito") ? "text-primary" : "text-muted-foreground"
+                    isActive("/dashboard/unidades") ? "text-primary" : "text-muted-foreground"
                   )}
                 >
                   Unidades
@@ -119,8 +119,8 @@ export function Navigation() {
                     <div className="flex items-center gap-2 border-l pl-4 ml-2">
                       <Button variant="ghost" size="sm" asChild className="gap-2">
                         <Link href="/dashboard/perfil">
-                           <User className="h-4 w-4" />
-                           <span>{user.username}</span>
+                          <User className="h-4 w-4" />
+                          <span>{user.username}</span>
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => logout()}>
