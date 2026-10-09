@@ -32,9 +32,9 @@ export default function LoginPage() {
 
     setIsLoading(true)
     try {
-      const success = await login(formData.email, formData.password)
-      if (success) {
-        router.push("/dashboard")
+      const data = await login(formData.email, formData.password)
+      if (data) {
+        router.push(data.role === "admin" ? "/antmaster" : "/dashboard")
       } else {
         setErrors({ submit: "Credenciales inválidas o acceso no autorizado." })
       }

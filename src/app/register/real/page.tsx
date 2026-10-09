@@ -61,7 +61,7 @@ export default function RegisterPage() {
         try {
             const success = await register(formData.email, formData.username, formData.password)
             if (success) {
-                router.push("/dashboard")
+                router.push(`/register/check-email?email=${encodeURIComponent(formData.email)}`)
             } else {
                 setErrors({ submit: "El registro falló. Por favor intenta de nuevo." })
             }

@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nidoria · Manual del Proyecto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0b09;
+    --bg2: #1c1512;
+    --surface: #2a201b;
+    --surface2: #231b16;
+    --border: rgba(181, 131, 90, 0.15);
+    --border2: rgba(181, 131, 90, 0.3);
+    --text: #ece0d1;
+    --text2: #a69080;
+    --primary: #b5835a;
+    --primary-dim: rgba(181, 131, 90, 0.12);
+    --accent: #f59e0b;
+    --accent-dim: rgba(245, 158, 11, 0.1);
+    --amber: #f59e0b;
+    --red: #bc4749;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --radius: 1rem;
+    --font-serif: 'Crimson Pro', Georgia, serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(181, 131, 90, 0.03) 0%, transparent 20%),
+      radial-gradient(circle at 80% 50%, rgba(181, 131, 90, 0.02) 0%, transparent 30%),
+      url("https://www.transparenttextures.com/patterns/dark-matter.png");
+    background-attachment: fixed;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='nf'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23nf)'/%3E%3C/svg%3E");
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(15, 11, 9, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  nav .logo svg { width: 28px; height: 28px; }
+
+  nav .logo span { color: var(--text); }
+  nav .logo span.hl { color: var(--primary); }
+
+  nav .links { display: flex; gap: 20px; align-items: center; }
+  nav .links a {
+    color: var(--text2); text-decoration: none; font-size: 0.85rem;
+    font-weight: 500; transition: color 0.2s; letter-spacing: 0.3px;
+  }
+  nav .links a:hover { color: var(--primary); }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(181,131,90,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(245,158,11,0.2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--text2);
+    max-width: 600px;
+    margin-bottom: 36px;
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+
+  .hero-meta {
+    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+  }
+
+  .hero-meta span {
+    font-size: 0.85rem; color: var(--text2);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .hero-meta span strong { color: var(--text); font-weight: 600; }
+
+  /* ===== DECORATIVE CIRCLES (rastler.dev style) ===== */
+  .deco-circles {
+    position: fixed;
+    right: -60px; top: 10%;
+    width: 400px; height: 400px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+  .deco-circles .c {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    opacity: 0.3;
+  }
+  .deco-circles .c:nth-child(1) { width: 400px; height: 400px; top: 0; right: 0; }
+  .deco-circles .c:nth-child(2) { width: 300px; height: 300px; top: 50px; right: 50px; }
+  .deco-circles .c:nth-child(3) { width: 200px; height: 200px; top: 100px; right: 100px; }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 80px 24px; position: relative; }
+  section .inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: var(--primary-dim);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  h2 .hl { color: var(--primary); }
+
+  .section-desc {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 640px;
+    margin-bottom: 48px;
+    line-height: 1.8;
+  }
+
+  h3 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 40px 100px 50px 110px / 100px 40px 120px 50px;
+    padding: 32px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(8px);
+  }
+
+  .card:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: var(--primary);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 20px rgba(181,131,90,0.08);
+  }
+
+  .card-flat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: all 0.3s ease;
+  }
+  .card-flat:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+
+  /* ===== TECH STACK ===== */
+  .tech-stack { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+  .tech-badge {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--primary-dim);
+    color: var(--primary);
+    border: 1px solid rgba(181,131,90,0.15);
+  }
+  .tech-badge.accent {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(245,158,11,0.15);
+  }
+  .tech-badge.green {
+    background: rgba(74,222,128,0.08);
+    color: var(--green);
+    border-color: rgba(74,222,128,0.12);
+  }
+  .tech-badge.blue {
+    background: rgba(96,165,250,0.08);
+    color: var(--blue);
+    border-color: rgba(96,165,250,0.12);
+  }
+
+  /* ===== SEPARATOR ===== */
+  .sep {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--primary), transparent);
+    margin: 32px 0;
+  }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th {
+    text-align: left; padding: 14px 16px;
+    background: var(--surface2); color: var(--text2);
+    font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(181,131,90,0.04); }
+
+  /* ===== CODE ===== */
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(181,131,90,0.1);
+    color: var(--primary);
+    border: 1px solid rgba(181,131,90,0.1);
+  }
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text2);
+  }
+  pre .kw { color: var(--accent); }
+  pre .str { color: var(--green); }
+  pre .cm { color: var(--text2); opacity: 0.6; }
+  pre .fn { color: var(--blue); }
+  pre .tp { color: var(--primary); }
+
+  /* ===== LIST ===== */
+  ul, ol { padding-left: 24px; margin: 16px 0; color: var(--text2); }
+  li { margin-bottom: 6px; }
+  li strong { color: var(--text); }
+
+  /* ===== FEATURE ICON LIST ===== */
+  .feature-list { display: grid; gap: 20px; }
+  .feature-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px; background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); transition: all 0.3s;
+  }
+  .feature-item:hover { border-color: var(--border2); }
+  .feature-icon {
+    width: 44px; height: 44px; min-width: 44px;
+    border-radius: 12px; background: var(--primary-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+  .feature-icon.a { background: var(--accent-dim); }
+  .feature-icon.g { background: rgba(74,222,128,0.1); }
+  .feature-item h4 { margin-bottom: 4px; }
+  .feature-item p { font-size: 0.88rem; color: var(--text2); line-height: 1.6; }
+
+  /* ===== UNITS ===== */
+  .unit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s;
+  }
+  .unit-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  .unit-card .cat {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+    padding: 2px 10px; border-radius: 4px;
+    display: inline-block; margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .unit-card .cat.light { background: rgba(96,165,250,0.12); color: var(--blue); border: 1px solid rgba(96,165,250,0.15); }
+  .unit-card .cat.heavy { background: rgba(188,71,73,0.12); color: var(--red); border: 1px solid rgba(188,71,73,0.15); }
+  .unit-card .cat.artillery { background: rgba(245,158,11,0.12); color: var(--accent); border: 1px solid rgba(245,158,11,0.15); }
+  .unit-card .cat.special { background: rgba(168,85,247,0.12); color: #a855f7; border: 1px solid rgba(168,85,247,0.15); }
+  .unit-card .stats { display: flex; gap: 12px; margin: 10px 0; }
+  .unit-card .stats span { font-size: 0.8rem; color: var(--text2); }
+  .unit-card .stats span strong { color: var(--text); }
+  .unit-card .ability { font-size: 0.85rem; color: var(--accent); font-weight: 500; margin: 8px 0; }
+  .unit-card .desc { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+
+  .unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ===== ARCHITECTURE ===== */
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px;
+    position: relative;
+  }
+  .arch-box {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid;
+    text-align: center;
+    min-width: 160px;
+  }
+  .arch-box.client { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: var(--accent); }
+  .arch-box.server { background: rgba(181,131,90,0.1); border-color: rgba(181,131,90,0.2); color: var(--primary); }
+  .arch-box.db { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.12); color: var(--green); }
+  .arch-box.ws { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.12); color: var(--blue); }
+  .arch-arrow { color: var(--text2); font-size: 1.2rem; }
+  .arch-label { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+
+  /* ===== STATUS BADGE ===== */
+  .status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.75rem; font-weight: 600; padding: 4px 12px;
+    border-radius: 100px;
+  }
+  .status.active { background: rgba(74,222,128,0.1); color: var(--green); }
+  .status.dev { background: var(--accent-dim); color: var(--accent); }
+  .status.done { background: var(--primary-dim); color: var(--primary); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--text2);
+    font-size: 0.85rem;
+  }
+  footer strong { color: var(--primary); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    nav .links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    section { padding: 60px 20px; }
+    .card { border-radius: 24px; padding: 24px; }
+    .unit-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .float { animation: float 6s ease-in-out infinite; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.6s ease-out both; }
+
+  .amber-glow {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+    animation: pulse 4s infinite alternate ease-in-out;
+  }
+  @keyframes pulse {
+    from { box-shadow: 0 0 15px rgba(245, 158, 11, 0.1); }
+    to { box-shadow: 0 0 35px rgba(245, 158, 11, 0.2); }
+  }
+
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 48px;
+  }
+  .toc h3 { margin-bottom: 16px; font-family: var(--font-sans); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); }
+  .toc ol { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px; }
+  .toc ol li { margin: 0; }
+  .toc ol li a {
+    color: var(--text2); text-decoration: none; font-size: 0.88rem;
+    padding: 6px 10px; display: block; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .toc ol li a:hover { color: var(--primary); background: var(--primary-dim); }
+
+  .toc ol li a .num { color: var(--primary); font-weight: 600; margin-right: 6px; }
+
+  /* ===== EXTRA ===== */
+  .text-accent { color: var(--accent); }
+  .text-primary { color: var(--primary); }
+  .text-muted { color: var(--text2); }
+  .mb-4 { margin-bottom: 16px; }
+  .mb-8 { margin-bottom: 32px; }
+  .mt-8 { margin-top: 32px; }
+  .flex { display: flex; }
+  .gap-2 { gap: 8px; }
+  .gap-4 { gap: 16px; }
+  .items-center { align-items: center; }
+  .flex-wrap { flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<div class="deco-circles">
+  <div class="c"></div><div class="c"></div><div class="c"></div>
+</div>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a href="#" class="logo">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" fill="currentColor" fill-opacity="0.1"/>
+      <circle cx="50" cy="35" r="12" fill="currentColor"/>
+      <circle cx="35" cy="55" r="8" fill="currentColor" fill-opacity="0.8"/>
+      <circle cx="65" cy="55" r="8" fill="currentColor" fill-opacity="0.8"/>
+      <circle cx="50" cy="70" r="6" fill="currentColor" fill-opacity="0.6"/>
+      <circle cx="25" cy="70" r="4" fill="currentColor" fill-opacity="0.4"/>
+      <circle cx="75" cy="70" r="4" fill="currentColor" fill-opacity="0.4"/>
+      <path d="M50 47 L35 47 M50 47 L65 47 M50 58 L50 64 M35 63 L25 66 M65 63 L75 66" stroke="currentColor" stroke-width="2" stroke-opacity="0.6"/>
+    </svg>
+    <span><span class="hl">Nidoria</span></span>
+  </a>
+  <div class="links">
+    <a href="#intro">Introducción</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#auth">Autenticación</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#features">Características</a>
+    <a href="#unidades">Unidades</a>
+    <a href="#api">API</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="hero-badge">v0.1.0 · Next.js 15</div>
+  <h1>Manual de Nidoria</h1>
+  <p>Estrategia en tiempo real con hormigas — donde el poder se construye túnel a túnel.</p>
+  <div class="hero-meta">
+    <span><strong>Estado:</strong> <span class="status dev">En Desarrollo</span></span>
+    <span><strong>Framework:</strong> Next.js 15 + Turbopack</span>
+    <span><strong>Backend:</strong> NestJS</span>
+    <span><strong>Idioma:</strong> Español</span>
+  </div>
+</header>
+
+<!-- ===== INTRO ===== -->
+<section id="intro">
+  <div class="inner fade-up">
+    <div class="section-tag">Visión General</div>
+    <h2>El <span class="hl">Inframundo</span> te espera</h2>
+    <p class="section-desc">
+      Nidoria es un juego de estrategia en tiempo real multijugador donde gestionas una colonia de hormigas.
+      Recolecta recursos, construye cámaras, investiga tecnologías, cría soldados y domina el inframundo.
+      Este manual documenta la totalidad del proyecto web, su arquitectura, componentes y funcionalidades.
+    </p>
+
+    <div class="toc">
+      <h3>Contenido</h3>
+      <ol>
+        <li><a href="#arquitectura"><span class="num">01</span>Arquitectura del proyecto</a></li>
+        <li><a href="#auth"><span class="num">02</span>Sistema de autenticación</a></li>
+        <li><a href="#dashboard"><span class="num">03</span>Dashboard y Centro de Comando</a></li>
+        <li><a href="#construcciones"><span class="num">04</span>Construcciones</a></li>
+        <li><a href="#investigaciones"><span class="num">05</span>Investigaciones</a></li>
+        <li><a href="#unidades"><span class="num">06</span>Unidades militares</a></li>
+        <li><a href="#misiones"><span class="num">07</span>Misiones y recursos</a></li>
+        <li><a href="#ranking"><span class="num">08</span>Ranking y perfil</a></li>
+        <li><a href="#wiki"><span class="num">09</span>Wiki enciclopédica</a></li>
+        <li><a href="#api"><span class="num">10</span>API reference</a></li>
+        <li><a href="#socket"><span class="num">11</span>Socket.IO en tiempo real</a></li>
+        <li><a href="#accesibilidad"><span class="num">12</span>Accesibilidad</a></li>
+      </ol>
+    </div>
+
+    <div class="grid-3" style="margin-top:40px;">
+      <div class="card">
+        <h3 style="font-family:var(--font-sans);font-size:0.9rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;">Frontend</h3>
+        <div class="tech-stack">
+          <span class="tech-badge">Next.js 15</span>
+          <span class="tech-badge">React 19</span>
+          <span class="tech-badge accent">Tailwind v4</span>
+          <span class="tech-badge">TypeScript</span>
+          <span class="tech-badge">Turbopack</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:var(--font-sans);font-size:0.9rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;">Backend</h3>
+        <div class="tech-stack">
+          <span class="tech-badge">NestJS</span>
+          <span class="tech-badge">REST API</span>
+          <span class="tech-badge blue">Socket.IO</span>
+          <span class="tech-badge">JWT</span>
+          <span class="tech-badge green">SWR</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-family:var(--font-sans);font-size:0.9rem;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;">UI & UX</h3>
+        <div class="tech-stack">
+          <span class="tech-badge">Radix UI</span>
+          <span class="tech-badge">Lucide</span>
+          <span class="tech-badge">next-themes</span>
+          <span class="tech-badge">Crimson Pro</span>
+          <span class="tech-badge">shadcn/ui</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sep" style="margin:0 auto;"></div>
+
+<!-- ===== ARQUITECTURA ===== -->
+<section id="arquitectura">
+  <div class="inner fade-up">
+    <div class="section-tag">Estructura</div>
+    <h2>Arquitectura del <span class="hl">proyecto</span></h2>
+    <p class="section-desc">
+      Nidoria sigue una arquitectura de frontend y backend desacoplados, comunicados vía REST API y WebSockets.
+      El cliente Next.js se ejecuta con Turbopack y se sirve en el puerto 3000, mientras que el servidor NestJS
+      opera en <code>localhost:4000</code>.
+    </p>
+
+    <div class="arch-diagram" style="margin:40px 0;">
+      <div class="arch-box client">🌐 Cliente Next.js (3000)</div>
+      <div class="arch-arrow">↓ REST API (fetch / axios)</div>
+      <div class="arch-box server">⚙️ Server NestJS (4000)</div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-box db">🗄️ Base de Datos</div>
+      <div style="margin-top:20px;width:100%;text-align:center;border-top:1px solid var(--border);padding-top:20px;">
+        <div class="arch-box ws" style="display:inline-block;">🔌 Socket.IO · Tiempo Real</div>
+        <div class="arch-label" style="margin-top:8px;">Eventos: anthill_update · auth_error</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px;">Estructura de directorios</h3>
+    <pre>
+├── <span class="kw">src/</span>
+│   ├── <span class="fn">app/</span>                    <span class="cm">// App Router (Next.js 15)</span>
+│   │   ├── <span class="fn">page.tsx</span>              Landing page
+│   │   ├── <span class="fn">globals.css</span>           Estilos globales y tema
+│   │   ├── <span class="fn">login/</span>               Autenticación
+│   │   ├── <span class="fn">register/</span>            Registro + pre-registro
+│   │   ├── <span class="fn">explore/</span>             Página de exploración
+│   │   ├── <span class="fn">wiki/</span>                Wiki de unidades
+│   │   ├── <span class="fn">dashboard/</span>           Panel de control del jugador
+│   │   │   ├── <span class="fn">construcciones/</span>    Gestión de edificios
+│   │   │   ├── <span class="fn">investigaciones/</span>   Árbol tecnológico
+│   │   │   ├── <span class="fn">misiones/</span>         Asignación de recursos
+│   │   │   ├── <span class="fn">unidades/</span>         Reclutamiento militar
+│   │   │   ├── <span class="fn">perfil/</span>           Perfil de jugador
+│   │   │   ├── <span class="fn">ranking/</span>          Clasificaciones
+│   │   │   └── <span class="fn">correos/</span>          Centro de mensajes
+│   │   └── <span class="fn">api/</span>                 API Routes proxy
+│   ├── <span class="fn">components/</span>            Componentes React reutilizables
+│   │   └── <span class="fn">ui/</span>                 shadcn/ui components
+│   ├── <span class="fn">context/</span>               Contextos React (Socket, Auth)
+│   ├── <span class="fn">lib/</span>                   Utilidades, hooks, API client
+│   └── <span class="fn">styles/</span>                Estilos adicionales</pre>
+  </div>
+</section>
+
+<!-- ===== AUTH ===== -->
+<section id="auth" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Seguridad</div>
+    <h2>Sistema de <span class="hl">autenticación</span></h2>
+    <p class="section-desc">
+      Implementa autenticación JWT con <code>access_token</code> y <code>refresh_token</code> almacenados en cookies
+      mediante <code>js-cookie</code>. El flujo incluye registro por email, pre-registro con ventajas de fundador,
+      y renovación automática de tokens.
+    </p>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon a">🔐</div>
+        <div>
+          <h4>Login / Registro</h4>
+          <p>Formularios con validación, feedback visual y redirección post-autenticación. El login llama a <code>/api/auth/login</code> que retorna <code>access_token</code>, <code>refresh_token</code> y datos del usuario.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📧</div>
+        <div>
+          <h4>Pre-registro (Fundador)</h4>
+          <p>Registro temprano solo con email, pensado para la campaña de lanzamiento. Los fundadores obtienen acceso anticipado, emblema exclusivo y bonus de recursos.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon a">🔄</div>
+        <div>
+          <h4>Refresh automático</h4>
+          <p>El API client intercepta errores 401 y ejecuta <code>/api/auth/refresh</code> para renovar el token sin intervención del usuario. Si falla, fuerza el logout.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon g">🛡️</div>
+        <div>
+          <h4>ProtectedRoute</h4>
+          <p>Componente wrapper que redirige a <code>/login</code> si el usuario no está autenticado, protegiendo todas las rutas del dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:40px;">Flujo de autenticación</h3>
+    <pre>
+<span class="cm">// AuthProvider envuelve toda la app en layout.tsx</span>
+<span class="tp">&lt;AuthProvider&gt;</span>
+  <span class="tp">&lt;SocketProvider&gt;</span>
+    <span class="tp">&lt;ThemeProvider&gt;</span>
+      {children}
+    <span class="tp">&lt;/ThemeProvider&gt;</span>
+  <span class="tp">&lt;/SocketProvider&gt;</span>
+<span class="tp">&lt;/AuthProvider&gt;</span>
+
+<span class="cm">// useAuth() expone:</span>
+{ user, token, login(), register(), logout(), loading }
+
+<span class="cm">// API Routes proxy:</span>
+<span class="fn">POST</span> /api/auth/login      →  { access_token, refresh_token, user }
+<span class="fn">POST</span> /api/auth/register   →  Crea cuenta completa
+<span class="fn">POST</span> /api/auth/refresh    →  Renueva tokens
+<span class="fn">POST</span> /api/pre-register    →  Email-only pre-registro</pre>
+  </div>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard">
+  <div class="inner fade-up">
+    <div class="section-tag">Panel de Control</div>
+    <h2>Centro de <span class="hl">Comando</span></h2>
+    <p class="section-desc">
+      El corazón de la experiencia de juego. Un dashboard interactivo con barra de recursos en tiempo real,
+      acceso directo a construcciones, investigaciones, ejército y misiones, más el estado completo de la colonia.
+    </p>
+
+    <div class="grid-2" style="margin-bottom:32px;">
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">📊</span>
+          <div>
+            <h4 style="margin:0;">Barra de Recursos (Stats)</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Componente <code>Stats</code> visible en todas las páginas del dashboard.</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Muestra: Huevos, Larvas, Hormigas totales, Alimento (🍯), Madera (🪵), Hojas (🍃). Datos en tiempo real vía Socket.IO.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🧩</span>
+          <div>
+            <h4 style="margin:0;">Paneles de Gestión</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">4 cards principales en el centro de comando.</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Construcciones · Investigaciones · Ejército · Misiones. Cada card redirige a su sección detallada con efecto hover y escala.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Sección</th><th>Ruta</th><th>Función</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dashboard</td><td><code>/dashboard</code></td><td>Centro de comando con resumen de colonia</td></tr>
+          <tr><td>Construcciones</td><td><code>/dashboard/construcciones</code></td><td>Gestión de edificios y mejoras</td></tr>
+          <tr><td>Investigaciones</td><td><code>/dashboard/investigaciones</code></td><td>Árbol tecnológico y evoluciones</td></tr>
+          <tr><td>Unidades</td><td><code>/dashboard/unidades</code></td><td>Reclutamiento de hormigas soldado</td></tr>
+          <tr><td>Misiones</td><td><code>/dashboard/misiones</code></td><td>Asignación de obreras a recursos</td></tr>
+          <tr><td>Perfil</td><td><code>/dashboard/perfil</code></td><td>Avatar, títulos, nivel y ranking</td></tr>
+          <tr><td>Ranking</td><td><code>/dashboard/ranking</code></td><td>Clasificaciones con podio y categorías</td></tr>
+          <tr><td>Correos</td><td><code>/dashboard/correos</code></td><td>Sistema de mensajería interno</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONSTRUCCIONES ===== -->
+<section id="construcciones" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Infraestructura</div>
+    <h2>Sistema de <span class="hl">Construcciones</span></h2>
+    <p class="section-desc">
+      Gestiona el crecimiento de tu colonia construyendo nuevas cámaras, almacenes y defensas.
+      Cada edificio tiene niveles, costes en recursos y tiempos de mejora. Algunos requieren
+      requisitos previos (otras construcciones o investigaciones).
+    </p>
+
+    <div class="feature-list" style="margin-bottom:32px;">
+      <div class="feature-item">
+        <div class="feature-icon a">🏗️</div>
+        <div>
+          <h4>Edificios Construidos</h4>
+          <p>Lista de estructuras operativas con su nivel actual, beneficios y opción de mejora. Las mejoras muestran coste en 🍯 🪵 🍃 🐜 y tiempo de construcción.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <div>
+          <h4>Proyectos Bloqueados</h4>
+          <p>Estructuras avanzadas que requieren cumplir requisitos previos (ej: nivel mínimo de otra construcción). Se muestran con indicación visual de lo necesario.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon g">⚡</div>
+        <div>
+          <h4>Estado en Tiempo Real</h4>
+          <p>Via Socket.IO, las construcciones en progreso muestran su estado actualizado, tiempo restante y finalización estimada.</p>
+        </div>
+      </div>
+    </div>
+
+    <pre>
+<span class="cm">// Flujo de construcción:</span>
+<span class="fn">GET</span>  /api/constructions    →  Lista de construcciones disponibles y activas
+<span class="fn">POST</span> /api/constructions    →  Inicia nueva construcción o mejora
+       Body: { constructionId: number }
+
+<span class="cm">// Socket event: anthill_update → buildings[]</span>
+{ id, name, level, status: <span class="str">"BUILDING"</span>|<span class="str">"COMPLETED"</span>, finishingAt, update[] }
+
+<span class="cm">// Cada construcción tiene:</span>
+{ id, name, description, level, maxLevel, cost: { FOOD, WOOD, LEAD, ANTS, time },
+  effects: { description }, requirements: [{ requiredName, requiredLevel }] }</pre>
+  </div>
+</section>
+
+<!-- ===== INVESTIGACIONES ===== -->
+<section id="investigaciones">
+  <div class="inner fade-up">
+    <div class="section-tag">Evolución</div>
+    <h2>Árbol de <span class="hl">Investigaciones</span></h2>
+    <p class="section-desc">
+      Desarrolla nuevas tecnologías para adaptar tu especie. El árbol tecnológico está organizado en categorías
+      (Economía, Militar, Infraestructura, Social) con niveles progresivos y requisitos de desbloqueo.
+    </p>
+
+    <div class="grid-3" style="margin-bottom:32px;">
+      <div class="card-flat">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🧪</div>
+        <h4>Tecnologías Desarrolladas</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Mejoras activas con bonificaciones por nivel. Cada tecnología puede tener hasta N niveles de evolución.</p>
+      </div>
+      <div class="card-flat">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🔬</div>
+        <h4>Nuevos Descubrimientos</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Tecnologías disponibles para iniciar su investigación con su coste y tiempo de desarrollo.</p>
+      </div>
+      <div class="card-flat">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🔒</div>
+        <h4>Proyectos Futuros</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Investigaciones bloqueadas que requieren otras tecnologías o edificios como prerequisito.</p>
+      </div>
+    </div>
+
+    <pre>
+<span class="cm">// API Investigaciones:</span>
+<span class="fn">GET</span>  /api/investigations    →  Lista de tecnologías
+<span class="fn">POST</span> /api/investigations    →  Inicia investigación
+       Body: { investigationId: number, instance?: number }
+
+<span class="cm">// Socket: anthill_update → techs[]</span>
+{ id, name, level, status: <span class="str">"INVESTIGATING"</span>|<span class="str">"COMPLETED"</span>,
+  finishingAt, update[{ investigation, cost }] }</pre>
+  </div>
+</section>
+
+<!-- ===== UNIDADES ===== -->
+<section id="unidades" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Milicia</div>
+    <h2>Manual de <span class="hl">Unidades</span></h2>
+    <p class="section-desc">
+      Nidoria presenta 30 tipos de hormigas soldado, cada una basada en una especie real con su biología,
+      comportamiento y rol táctico documentados. Organizadas en 3 categorías principales.
+    </p>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;">
+      <span class="tech-badge" style="background:rgba(96,165,250,0.12);color:var(--blue);border-color:rgba(96,165,250,0.15);">🐜 Artillería · 10 unidades</span>
+      <span class="tech-badge" style="background:rgba(74,222,128,0.1);color:var(--green);border-color:rgba(74,222,128,0.12);">⚔️ Infantería Ligera · 10 unidades</span>
+      <span class="tech-badge" style="background:rgba(188,71,73,0.12);color:var(--red);border-color:rgba(188,71,73,0.15);">🛡️ Infantería Pesada · 10 unidades</span>
+    </div>
+
+    <h3>Artillería</h3>
+    <div class="unit-grid" style="margin-bottom:40px;">
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Avíspero Ácido</h4>
+        <div class="stats"><span><strong>❤️</strong> 40</span><span><strong>🛡️</strong> 30</span><span><strong>⚔️</strong> 65</span></div>
+        <div class="ability">Lluvia Fórmica: ataque de área que reduce defensa 2 turnos.</div>
+        <div class="desc">Formica rufa — Hormiga Roja del Bosque. Rocía ácido fórmico a distancia (30 cm). Arquitectas de enormes montículos de agujas de pino.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Bomba Melosa</h4>
+        <div class="stats"><span><strong>❤️</strong> 35</span><span><strong>🛡️</strong> 25</span><span><strong>⚔️</strong> 60</span></div>
+        <div class="ability">Sacrificio de Colapso: al morir, inflige 50 de daño de área y ralentiza.</div>
+        <div class="desc">Camponotus saundersi — Autotisis: glándulas mandibulares gigantes que rompen el cuerpo liberando secreción pegajosa tóxica.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Cazador Nómada</h4>
+        <div class="stats"><span><strong>❤️</strong> 45</span><span><strong>🛡️</strong> 35</span><span><strong>⚔️</strong> 55</span></div>
+        <div class="ability">Aguijón de Fuego: 20% de quemadura (DoT) por 3 turnos.</div>
+        <div class="desc">Solenopsis invicta — Hormiga de Fuego. Veneno alcaloide (solenopsina) que causa pústulas. Forman balsas vivientes en inundaciones.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Francotirador Viscoso</h4>
+        <div class="stats"><span><strong>❤️</strong> 50</span><span><strong>🛡️</strong> 40</span><span><strong>⚔️</strong> 60</span></div>
+        <div class="ability">Tiro Paralizante: 15% de aturdir por 1 turno con veneno neurotóxico.</div>
+        <div class="desc">Myrmecia pilosula — Visión más aguda entre hormigas. Veneno neurotóxico que causa anafilaxis severa en humanos.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Catapulta de Semillas</h4>
+        <div class="stats"><span><strong>❤️</strong> 55</span><span><strong>🛡️</strong> 45</span><span><strong>⚔️</strong> 50</span></div>
+        <div class="ability">Impacto Contundente: ignora 30% de armadura.</div>
+        <div class="desc">Pheidole megacephala — Soldados Majors con cabezas masivas y mandíbulas trituradoras. Especie invasora global.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Rociador Tóxico</h4>
+        <div class="stats"><span><strong>❤️</strong> 38</span><span><strong>🛡️</strong> 28</span><span><strong>⚔️</strong> 62</span></div>
+        <div class="ability">Niebla Irritante: reduce precisión enemiga por 1 turno.</div>
+        <div class="desc">Oecophylla smaragdina — Hormiga tejedora. Rociá ácido fórmico irritante que desorienta. Construyen nodos cosiendo hojas.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Escupidor de Lodo</h4>
+        <div class="stats"><span><strong>❤️</strong> 42</span><span><strong>🛡️</strong> 32</span><span><strong>⚔️</strong> 58</span></div>
+        <div class="ability">Defensa Química: reduce 50% daño del próximo ataque.</div>
+        <div class="desc">Crematogaster spp. — Levanta el abdomen en alto. Secreta sustancia pegajosa desorientante con olor desagradable.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Guardián de Alquitrán</h4>
+        <div class="stats"><span><strong>❤️</strong> 48</span><span><strong>🛡️</strong> 38</span><span><strong>⚔️</strong> 52</span></div>
+        <div class="ability">Trampa de Resina: 10% de inmovilizar por 1 turno.</div>
+        <div class="desc">Aphaenogaster spp. — Usa resinas y semillas pegajosas como defensa. Control de masas a distancia.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Asedio de Polvo</h4>
+        <div class="stats"><span><strong>❤️</strong> 46</span><span><strong>🛡️</strong> 36</span><span><strong>⚔️</strong> 54</span></div>
+        <div class="ability">Nube de Polvo: otorga 10% evasión a aliados adyacentes.</div>
+        <div class="desc">Pogonomyrmex spp. — Hormiga cosechadora del desierto. Levanta cortinas de arena para ocultar aliados.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat artillery">Artillería</span>
+        <h4>Toxina de Túnel</h4>
+        <div class="stats"><span><strong>❤️</strong> 32</span><span><strong>🛡️</strong> 22</span><span><strong>⚔️</strong> 72</span></div>
+        <div class="ability">Golpe Crítico Táctico: 50% crítico en primer ataque tras moverse.</div>
+        <div class="desc">Lasius niger — Pequeña y ágil. Unidad de cristal: alto daño pero frágil. Emboscadas relámpago.</div>
+      </div>
+    </div>
+
+    <h3>Infantería Ligera</h3>
+    <div class="unit-grid" style="margin-bottom:40px;">
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Enjambre Errante</h4>
+        <div class="stats"><span><strong>❤️</strong> 50</span><span><strong>🛡️</strong> 40</span><span><strong>⚔️</strong> 75</span></div>
+        <div class="ability">Frenesí de Cuchillas: +5% daño por cada 5 unidades en campo.</div>
+        <div class="desc">Dorylus / Siafu — Hormigas Guerreras. Ciegas, atacan en masa. Mandíbulas usadas como suturas vivientes en culturas africanas.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Asaltante Saltador</h4>
+        <div class="stats"><span><strong>❤️</strong> 55</span><span><strong>🛡️</strong> 45</span><span><strong>⚔️</strong> 60</span></div>
+        <div class="ability">Maniobra de Flanqueo: +20% daño a unidades trabadas en combate.</div>
+        <div class="desc">Harpegnathos saltator — Capaz de saltar varios centímetros para cazar o escapar.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Piquete Mandibular</h4>
+        <div class="stats"><span><strong>❤️</strong> 40</span><span><strong>🛡️</strong> 35</span><span><strong>⚔️</strong> 80</span></div>
+        <div class="ability">Golpe de Precisión: 30% de ignorar defensa.</div>
+        <div class="desc">Odontomachus — Mandíbulas más rápidas del reino animal: 230 km/h en 0.13 ms. Usa el golpe para impulsarse.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Corredor Fantasma</h4>
+        <div class="stats"><span><strong>❤️</strong> 30</span><span><strong>🛡️</strong> 30</span><span><strong>⚔️</strong> 70</span></div>
+        <div class="ability">Velocidad Extrema: 40% de esquivar ataques de artillería.</div>
+        <div class="desc">Cataglyphis — Forrajea en el Sahara a 60°C. Patas largas para elevar el cuerpo del suelo ardiente.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Fuerza Hormiguero</h4>
+        <div class="stats"><span><strong>❤️</strong> 52</span><span><strong>🛡️</strong> 42</span><span><strong>⚔️</strong> 65</span></div>
+        <div class="ability">Refuerzos Incesantes: 50% de generar un Recluta al morir.</div>
+        <div class="desc">Linepithema humile — Hormiga Argentina. Supercolonias que abarcan continentes. Guerra de saturación.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Verdugo Sedoso</h4>
+        <div class="stats"><span><strong>❤️</strong> 48</span><span><strong>🛡️</strong> 38</span><span><strong>⚔️</strong> 72</span></div>
+        <div class="ability">Incursor de Esclavos: +25% daño a unidades con debuffs.</div>
+        <div class="desc">Polyergus rufescens — Esclavista obligada. No puede alimentarse ni cuidar crías. Mandíbulas en forma de hoz.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Saqueador Minúsculo</h4>
+        <div class="stats"><span><strong>❤️</strong> 37</span><span><strong>🛡️</strong> 32</span><span><strong>⚔️</strong> 78</span></div>
+        <div class="ability">Asalto Perfumado: reduce moral de enemigos adyacentes.</div>
+        <div class="desc">Tapinoma sessile — Olor defensivo a coco podrido o queso azul. Plaga constante, invade cualquier lugar.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Guardián de Escamas</h4>
+        <div class="stats"><span><strong>❤️</strong> 58</span><span><strong>🛡️</strong> 48</span><span><strong>⚔️</strong> 58</span></div>
+        <div class="ability">Escudo de Avance: otorga +10 DEF temporal a aliados que pasen.</div>
+        <div class="desc">Colobopsis truncata — Cabeza plana en forma de disco para sellar túneles. Bloqueo físico del nido.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Centinela Vigilante</h4>
+        <div class="stats"><span><strong>❤️</strong> 45</span><span><strong>🛡️</strong> 40</span><span><strong>⚔️</strong> 68</span></div>
+        <div class="ability">Ojo de Halcón: revela unidades enemigas ocultas.</div>
+        <div class="desc">Formica polyctena — Policía sanitaria del ecosistema. Detecta intrusos y elimina insectos enfermos.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat light">Infantería Ligera</span>
+        <h4>Infiltrado Húmedo</h4>
+        <div class="stats"><span><strong>❤️</strong> 37</span><span><strong>🛡️</strong> 34</span><span><strong>⚔️</strong> 74</span></div>
+        <div class="ability">Goteo de Veneno: deja rastro tóxico que daña a enemigos.</div>
+        <div class="desc">Monomorium pharaonis — Hormiga Faraón. Plaga mundial, vector de patógenos. Pasa por grietas microscópicas.</div>
+      </div>
+    </div>
+
+    <h3>Infantería Pesada</h3>
+    <div class="unit-grid">
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Destructor de Cuernos</h4>
+        <div class="stats"><span><strong>❤️</strong> 85</span><span><strong>🛡️</strong> 70</span><span><strong>⚔️</strong> 60</span></div>
+        <div class="ability">Blindaje Fúngico: reduce daño físico en 10.</div>
+        <div class="desc">Atta spp. — Cortadora de hojas. Exoesqueleto con capa de calcita. Tanque absoluto.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Máquina Excavadora</h4>
+        <div class="stats"><span><strong>❤️</strong> 78</span><span><strong>🛡️</strong> 55</span><span><strong>⚔️</strong> 75</span></div>
+        <div class="ability">Asalto Minero: +50% daño a estructuras.</div>
+        <div class="desc">Acanthomyrmex — Mandíbulas con dientes serrados como pinzas de fuerza. Especialista en asedio.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Gladiador Cosechador</h4>
+        <div class="stats"><span><strong>❤️</strong> 80</span><span><strong>🛡️</strong> 60</span><span><strong>⚔️</strong> 65</span></div>
+        <div class="ability">Voluntad Inquebrantable: inmune a ralentización e inmovilización.</div>
+        <div class="desc">Messor spp. — Cabeza masiva para triturar semillas. Fuerza para arrastrar 10x su peso.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Tormento de Fuego</h4>
+        <div class="stats"><span><strong>❤️</strong> 70</span><span><strong>🛡️</strong> 60</span><span><strong>⚔️</strong> 70</span></div>
+        <div class="ability">Mordida Pirotóxica: veneno acumulable hasta 3 stacks (DoT).</div>
+        <div class="desc">Solenopsis invicta (Mayor) — Veneno solenopsina. Causa pústulas necróticas. Duele como quemadura.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Guardián de Mandíbula</h4>
+        <div class="stats"><span><strong>❤️</strong> 90</span><span><strong>🛡️</strong> 65</span><span><strong>⚔️</strong> 62</span></div>
+        <div class="ability">Ataque Masivo: 40% de aturdir por 1 turno.</div>
+        <div class="desc">Camponotus ligniperda — Hormiga más grande de Europa. Excava madera podrida con mandíbulas poderosas.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Asaltante de Árbol</h4>
+        <div class="stats"><span><strong>❤️</strong> 75</span><span><strong>🛡️</strong> 62</span><span><strong>⚔️</strong> 68</span></div>
+        <div class="ability">Desembarco Aéreo: 30% de ignorar interceptores al desplegarse.</div>
+        <div class="desc">Cephalotes spp. — Hormiga planeadora. Cuerpo plano para deslizarse entre árboles. Infiltración aérea.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Golpeador de Roca</h4>
+        <div class="stats"><span><strong>❤️</strong> 72</span><span><strong>🛡️</strong> 50</span><span><strong>⚔️</strong> 80</span></div>
+        <div class="ability">Picadura de Choque: críticos infligen envenenamiento severo.</div>
+        <div class="desc">Pogonomyrmex spp. — Picadura comparable a la Hormiga Bala. Construye montículos moviendo rocas.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Moldeador de Barro</h4>
+        <div class="stats"><span><strong>❤️</strong> 82</span><span><strong>🛡️</strong> 68</span><span><strong>⚔️</strong> 55</span></div>
+        <div class="ability">Muro Temporal: +10 DEF por turno inmóvil (acumulable x3).</div>
+        <div class="desc">Crematogaster spp. — Construye nidos de barro. Abdomen en forma de corazón. Secreciones constructoras.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Torreón Azucarero</h4>
+        <div class="stats"><span><strong>❤️</strong> 95</span><span><strong>🛡️</strong> 60</span><span><strong>⚔️</strong> 50</span></div>
+        <div class="ability">Sustento Sacrificial: al morir, cura 25% PV a aliados adyacentes.</div>
+        <div class="desc">Hormigas Melíferas — Obreras-hinchan como despensas vivientes de néctar. PV más alto del juego.</div>
+      </div>
+      <div class="unit-card">
+        <span class="cat heavy">Infantería Pesada</span>
+        <h4>Muralla de Ébano</h4>
+        <div class="stats"><span><strong>❤️</strong> 88</span><span><strong>🛡️</strong> 75</span><span><strong>⚔️</strong> 78</span></div>
+        <div class="ability">Largo Castigo: Terror reduce 15% ATQ enemigo adyacente por 2 turnos.</div>
+        <div class="desc">Paraponera clavata — Hormiga Bala. Picadura más dolorosa del mundo (4.0 en índice Schmidt). Poneratoxina.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MISIONES ===== -->
+<section id="misiones">
+  <div class="inner fade-up">
+    <div class="section-tag">Economía</div>
+    <h2>Misiones y <span class="hl">Recursos</span></h2>
+    <p class="section-desc">
+      Asigna obreras a tareas de recolección para mantener tu colonia próspera.
+      Tres tipos de recursos con sus propias misiones, eficiencias y tiempos de recolección.
+    </p>
+
+    <div class="grid-3" style="margin-bottom:32px;">
+      <div class="card-flat" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🍯</div>
+        <h4>Recolección de Néctar</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Las obreras recolectan néctar de flores cercanas. Dificultad: Baja.</p>
+      </div>
+      <div class="card-flat" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🪵</div>
+        <h4>Tala de Ramas</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Cortar y transportar pequeñas ramas para construcción. Dificultad: Media.</p>
+      </div>
+      <div class="card-flat" style="text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:8px;">🍃</div>
+        <h4>Cosecha de Hojas</h4>
+        <p style="font-size:0.85rem;color:var(--text2);">Recolectar hojas frescas para cultivo de hongos. Dificultad: Baja.</p>
+      </div>
+    </div>
+
+    <pre>
+<span class="cm">// API Misiones:</span>
+<span class="fn">POST</span> /api/misiones
+       Body: { resource: <span class="str">"FOOD"</span>|<span class="str">"WOOD"</span>|<span class="str">"LEAD"</span>, amount: number }
+
+<span class="cm">// SWR Hook:</span>
+useResources()  →  { food, wood, leaves, ants, antsBusy }
+
+<span class="cm">// Socket: anthill_update → explorations[]</span>
+{ resourceType, quantity, workers, createdAt, finishingAt }</pre>
+  </div>
+</section>
+
+<!-- ===== RANKING Y PERFIL ===== -->
+<section id="ranking" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Competitivo</div>
+    <h2>Ranking y <span class="hl">Perfil</span></h2>
+    <p class="section-desc">
+      Sistema de clasificación con podio visual para los 3 primeros, 4 categorías de ranking,
+      animaciones de carga y perfiles de jugador con avatares, títulos y niveles.
+    </p>
+
+    <div class="grid-2">
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon a">🏆</div>
+          <div>
+            <h4>Ranking General</h4>
+            <p>Clasificación global de todos los jugadores con posición, nombre y puntuación.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🏗️</div>
+          <div>
+            <h4>Ranking de Construcción</h4>
+            <p>Jugadores con más niveles de edificios construidos y mejor infraestructura.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon g">🔬</div>
+          <div>
+            <h4>Ranking de Investigación</h4>
+            <p>Más tecnologías desarrolladas y mayor nivel evolutivo alcanzado.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">⚔️</div>
+          <div>
+            <h4>Ranking Militar</h4>
+            <p>Poderío militar: unidades entrenadas y ejército desplegado.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-radius:var(--radius);">
+        <h4 style="margin-bottom:16px;">👤 Perfil de Jugador</h4>
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;">
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--primary-dim);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🐜</div>
+          <div>
+            <div style="font-weight:600;font-size:1.1rem;">Username</div>
+            <div style="font-size:0.85rem;color:var(--text2);">Nivel 12 · Rango: Fundador</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:12px;background:var(--surface2);border-radius:8px;text-align:center;">
+            <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">7</div>
+            <div style="font-size:0.75rem;color:var(--text2);">Títulos</div>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:8px;text-align:center;">
+            <div style="font-size:1.5rem;font-weight:700;color:var(--accent);">#3</div>
+            <div style="font-size:0.75rem;color:var(--text2);">Ranking</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WIKI ===== -->
+<section id="wiki">
+  <div class="inner fade-up">
+    <div class="section-tag">Enciclopedia</div>
+    <h2>Wiki de <span class="hl">Nidoria</span></h2>
+    <p class="section-desc">
+      Enciclopedia completa del mundo de Nidoria con documentación detallada de cada unidad,
+      su biología real, técnicas de combate y rol táctico en el juego.
+    </p>
+
+    <div class="card-flat" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2rem;">📖</span>
+        <div>
+          <h4 style="margin-bottom:4px;">Wiki de Unidades</h4>
+          <p style="color:var(--text2);font-size:0.9rem;">30 fichas detalladas en <code>/wiki/unidades</code> con estadísticas, habilidades, especie real, técnica de combate e impacto ambiental.</p>
+        </div>
+      </div>
+    </div>
+
+    <pre>
+<span class="cm">// Cada unidad en la wiki incluye:</span>
+{
+  id, nombre, categoria,
+  vida, defensa, ataque,
+  habilidadEspecial,          <span class="cm">// Efecto de juego</span>
+  descripcion,                <span class="cm">// Lore general</span>
+  tecnica,                    <span class="cm">// Técnica de combate real</span>
+  habilidad,                  <span class="cm">// Cómo se traduce al juego</span>
+  impacto,                    <span class="cm">// Impacto ambiental / rol</span>
+  imagen                      <span class="cm">// /unidades/{id}.png</span>
+}
+
+<span class="cm">// Categorías:</span>
+🐜 <span class="tp">Artillería</span> (10)    · Amarillo
+⚔️ <span class="tp">Infantería Ligera</span> (10) · Azul
+🛡️ <span class="tp">Infantería Pesada</span> (10) · Rojo</pre>
+  </div>
+</section>
+
+<!-- ===== API ===== -->
+<section id="api" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Referencia</div>
+    <h2>API <span class="hl">Reference</span></h2>
+    <p class="section-desc">
+      Todas las API Routes del frontend hacen proxy al backend NestJS en <code>localhost:4000</code>.
+      Las rutas siguen el patrón Next.js App Router con <code>route.ts</code> handlers.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Método</th><th>Ruta</th><th>Backend</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/auth/login</code></td><td><code>/auth/login</code></td><td>Inicia sesión, retorna tokens JWT</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/auth/register</code></td><td><code>/auth/register</code></td><td>Registro completo de usuario</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/auth/refresh</code></td><td><code>/auth/refresh</code></td><td>Renueva access_token</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/pre-register</code></td><td><code>/pre-register</code></td><td>Pre-registro email-only</td></tr>
+          <tr><td><code style="color:var(--blue);">GET</code></td><td><code>/api/resources</code></td><td><code>/resources</code></td><td>Recursos del jugador</td></tr>
+          <tr><td><code style="color:var(--blue);">GET</code></td><td><code>/api/ants</code></td><td><code>/units</code></td><td>Unidades reclutadas</td></tr>
+          <tr><td><code style="color:var(--blue);">GET</code></td><td><code>/api/constructions</code></td><td><code>/constructions</code></td><td>Edificios disponibles y activos</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/constructions</code></td><td><code>/constructions</code></td><td>Construir o mejorar edificio</td></tr>
+          <tr><td><code style="color:var(--blue);">GET</code></td><td><code>/api/investigations</code></td><td><code>/investigations</code></td><td>Tecnologías disponibles</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/investigations</code></td><td><code>/investigations</code></td><td>Iniciar investigación</td></tr>
+          <tr><td><code style="color:var(--green);">POST</code></td><td><code>/api/misiones</code></td><td><code>/mission</code></td><td>Asignar obreras a recursos</td></tr>
+          <tr><td><code style="color:var(--blue);">GET</code></td><td><code>/api/ranking</code></td><td><code>/ranking</code></td><td>Clasificaciones</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SOCKET ===== -->
+<section id="socket">
+  <div class="inner fade-up">
+    <div class="section-tag">Tiempo Real</div>
+    <h2>Socket.IO — <span class="hl">Eventos en Vivo</span></h2>
+    <p class="section-desc">
+      El cliente se conecta al servidor NestJS mediante Socket.IO con autenticación JWT.
+      Recibe actualizaciones continuas del estado de la colonia sin necesidad de recargar.
+    </p>
+
+    <div class="grid-2">
+      <div>
+        <div class="feature-item" style="margin-bottom:12px;">
+          <div class="feature-icon a">🔌</div>
+          <div>
+            <h4>Conexión</h4>
+            <p style="font-size:0.88rem;color:var(--text2);">Se establece en <code>SocketContext.tsx</code>. Conecta a <code>NEXT_PUBLIC_DB_HOST</code> con <code>auth: { token }</code>. Reintento automático cada 5s.</p>
+          </div>
+        </div>
+        <div class="feature-item" style="margin-bottom:12px;">
+          <div class="feature-icon">🔄</div>
+          <div>
+            <h4>anthill_update</h4>
+            <p style="font-size:0.88rem;color:var(--text2);">Evento principal que envía el estado completo de la colonia: stats, buildings, techs, explorations.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon g">✅</div>
+          <div>
+            <h4>auth_error</h4>
+            <p style="font-size:0.88rem;color:var(--text2);">Maneja errores de autenticación del socket. Desconecta y fuerza logout si el token expira.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <pre style="height:100%;">
+<span class="cm">// Conexión Socket.IO</span>
+<span class="kw">import</span> { io } <span class="kw">from</span> <span class="str">"socket.io-client"</span>;
+
+<span class="kw">const</span> socket = io(process.env.NEXT_PUBLIC_DB_HOST, {
+  auth: { token },
+  reconnection: <span class="tp">true</span>,
+  reconnectionDelay: 5000,
+  transports: [<span class="str">"websocket"</span>],
+});
+
+<span class="cm">// Evento principal</span>
+socket.on(<span class="str">"anthill_update"</span>, (data) => {
+  <span class="cm">// data = {</span>
+  <span class="cm">//   stats: { eggs, larvas, ants, antsBusy },</span>
+  <span class="cm">//   buildings: [{ id, name, level, status, finishingAt }],</span>
+  <span class="cm">//   techs: [{ id, name, level, status }],</span>
+  <span class="cm">//   explorations: [{ resourceType, quantity, workers }]</span>
+  <span class="cm">// }</span>
+});</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ACCESIBILIDAD ===== -->
+<section id="accesibilidad" style="background:var(--surface2);">
+  <div class="inner fade-up">
+    <div class="section-tag">Inclusión</div>
+    <h2>Accesibilidad y <span class="hl">Temas</span></h2>
+    <p class="section-desc">
+      Nidoria incorpora un sistema completo de accesibilidad visual con 4 modos de daltonismo,
+      temas claro/oscuro/sistema, y tipografía de alta legibilidad.
+    </p>
+
+    <div class="grid-3">
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🌙</span>
+          <div>
+            <h4 style="margin:0;">Tema Oscuro / Claro</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Vía <code>next-themes</code></p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Modo oscuro (default): tonos tierra #1c1512. Modo claro: crema #fdfbf7. Sincronización con sistema operativo.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🔵</span>
+          <div>
+            <h4 style="margin:0;">Protanopia / Deuteranopia</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Rojo-verde</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Paleta azul (#0284c7) y amarillo (#eab308). Reemplaza rojos/verdes problemáticos.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🟢</span>
+          <div>
+            <h4 style="margin:0;">Tritanopia</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Azul-amarillo</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Usa rojo (#dc2626) y verde (#16a34a) como colores principales seguros.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">⬛</span>
+          <div>
+            <h4 style="margin:0;">Achromatopsia</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Monocromo</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Blanco y negro de alto contraste. Modo oscuro: fondo #000, texto #fff.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🔤</span>
+          <div>
+            <h4 style="margin:0;">Tipografía</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Crimson Pro + Geist</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Crimson Pro como fuente serif principal (estética de colonia). Geist Sans/Mono para UI y código.</p>
+      </div>
+      <div class="card-flat">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:1.5rem;">🎨</span>
+          <div>
+            <h4 style="margin:0;">Paleta de Color</h4>
+            <p style="font-size:0.85rem;color:var(--text2);margin:0;">Tierra y ámbar</p>
+          </div>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text2);">Primary: #b5835a (marrón). Accent: #f59e0b (ámbar). Background: #1c1512 (tierra oscura). Foreground: #ece0d1 (crema cálida).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>Nidoria <strong>v0.1.0</strong> · Proyecto de <strong>Rastler Dev</strong> · Next.js 15 + NestJS + Socket.IO</p>
+  <p style="margin-top:6px;font-size:0.8rem;">
+    Manual generado con la estética de <strong>rastler.dev</strong> · Documentación completa del proyecto
+  </p>
+</footer>
+
+</body>
+</html>

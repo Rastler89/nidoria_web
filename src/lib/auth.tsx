@@ -14,7 +14,7 @@ interface AuthContextType {
   token: string | null
   refreshToken?: string | null
   refresh: () => Promise<void>
-  login: (email: string, password: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ role: string } | null>
   register: (email: string, username: string, password: string) => Promise<boolean>
   logout: () => void
   loading: boolean
@@ -47,9 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false)
   }, [])
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ role: string } | null> => {
     try {
-      // Simulate API call to your NestJS backend
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -69,18 +68,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(authToken)
         setUser(userData)
         setRefreshToken(refreshToken)
-        return true
+        return userData
       }
-      return false
+      return null
     } catch (error) {
       console.error("Login error:", error)
-      return false
+      return null
     }
   }
 
   const register = async (email: string, username: string, password: string): Promise<boolean> => {
     try {
-      // Simulate API call to your NestJS backend
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -89,19 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, username, password }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        const { token: authToken, user: userData, refreshToken: refreshToken} = data
-
-        Cookies.set("auth_token", authToken, { expires: 7 })
-        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 })
-        Cookies.set("refresh_token", String(refreshToken), { expires: 7 })
-        setToken(authToken)
-        setUser(userData)
-        setRefreshToken(refreshToken)
-        return true
-      }
-      return false
+      return response.ok
     } catch (error) {
       console.error("Register error:", error)
       return false

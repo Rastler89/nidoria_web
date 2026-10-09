@@ -27,6 +27,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (!token) return;
+        // Admin users don't need WebSocket (game real-time updates)
+        if (user && (user as any).role === "admin") return;
         const newSocket = io(dbHost, {
             auth: { token: token },
             transports: ['websocket'],
