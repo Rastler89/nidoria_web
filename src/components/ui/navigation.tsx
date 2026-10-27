@@ -134,7 +134,7 @@ export function Navigation() {
                       <Link href="/login">Iniciar sesión</Link>
                     </Button>
                     <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-                      <Link href="/register">Pre-regístrate</Link>
+                      <Link href="/register">Crear cuenta</Link>
                     </Button>
                   </>
                 )

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
         })
 
         if (!res.ok) {
-            return NextResponse.json({ error: "Failed to fetch investigations" }, { status: res.status })
+            return NextResponse.json({ error: "Failed to fetch units" }, { status: res.status })
         }
 
         const data = await res.json()
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const token = (await cookieStore).get('auth_token')?.value
 
     try {
-        const { antId, amount } = await req.json()
+        const { antId, quantity } = await req.json()
 
         const res = await apiFetch("units", {
             method: "POST",
@@ -37,11 +37,15 @@ export async function POST(req: NextRequest) {
                 "Authorization": `Bearer ${token ?? ""}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ antId, amount }),
+            body: JSON.stringify({ antId, quantity }),
         })
 
         if (!res.ok) {
-            return NextResponse.json({ error: "Failed to create unit" }, { status: res.status })
+            const data = await res.json().catch(() => ({}))
+            return NextResponse.json(
+                { error: data.message || "No se pudo iniciar el reclutamiento" },
+                { status: res.status },
+            )
         }
 
         const data = await res.json()

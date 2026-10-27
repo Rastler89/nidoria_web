@@ -60,9 +60,6 @@ export default function LoginPage() {
               <img src="/nidoria2.png" alt="Nidoria" className="w-32 mx-auto" />
             </div>
             <h1 className="text-4xl font-bold text-foreground mb-2">Acceso a la Colonia</h1>
-            <div className="inline-block px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs font-bold uppercase tracking-wider mb-6">
-              Mantenimiento / Solo Staff
-            </div>
           </div>
 
           <div className="nest-chamber p-8 shadow-2xl relative overflow-hidden">
@@ -108,7 +105,7 @@ export default function LoginPage() {
                 <p className="text-sm text-muted-foreground">
                   ¿No tienes acceso?{" "}
                   <Link href="/register" className="text-accent hover:underline font-bold">
-                    Pre-regístrate como Fundador
+                    Crea tu cuenta
                   </Link>
                 </p>
               </div>

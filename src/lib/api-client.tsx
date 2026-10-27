@@ -4,7 +4,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     const dbHost = process.env.NEXT_PUBLIC_DB_HOST; // Asegúrate de usar NEXT_PUBLIC para el cliente
 
     // 1. Obtener tokens de las cookies
-    let token = Cookies.get("auth_token");
+    const token = Cookies.get("auth_token");
     const refreshToken = Cookies.get("refresh_token");
 
     // 2. Configurar headers iniciales
