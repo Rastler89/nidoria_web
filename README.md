@@ -71,6 +71,20 @@ Ver [.env.example](./.env.example). `DB_HOST` (server), `NEXT_PUBLIC_DB_HOST` (b
 
 ---
 
+## 📱 PWA (instalable + offline)
+
+La web es una PWA: se puede instalar desde el navegador y mantiene una copia de las últimas páginas visitadas para abrir sin conexión.
+
+- **`src/app/manifest.ts`** — manifiesto (`/manifest.webmanifest`): nombre, colores del tema e iconos.
+- **`public/icons/`** — iconos 192/512, *maskable* y `apple-touch-icon`, generados a partir de `public/nidoria2.png`.
+- **`public/sw.js`** — service worker. Navegaciones *network-first* con copia en caché y fallback a `/offline`; `/_next/static/` *cache-first*; imágenes y fuentes *stale-while-revalidate*. Nunca cachea `/api/` ni peticiones de otro origen.
+- **`src/components/pwa-register.tsx`** — registra el worker **solo en producción** (en `next dev` estorbaría al HMR).
+- **`src/app/offline/page.tsx`** — página de respaldo sin conexión.
+
+Para probarlo hay que compilar y servir en producción (`npm run build && npm start`); en desarrollo el worker no se registra. Al cambiar la estrategia de caché de `public/sw.js`, subir `CACHE_VERSION` para invalidar las cachés antiguas.
+
+---
+
 ## 📦 Deploy
 
 Hay `Dockerfile` y `docker-compose.yml`. Para la beta sobre un VPS con Docker, ver la checklist en la raíz del proyecto (CORS, variables de producción, etc.).
