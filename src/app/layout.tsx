@@ -8,6 +8,7 @@ import { SocketProvider } from "@/context/SocketContext";
 import { Toaster } from "@/components/ui/toaster";
 import { SiteBanner } from "@/components/site-banner";
 import { PwaRegister } from "@/components/pwa-register";
+import { PwaInstall } from "@/components/pwa-install";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ export default function RootLayout({
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable}`} suppressHydrationWarning>
       <body className="font-sans">
         <PwaRegister />
+        <PwaInstall />
         <SiteBanner />
         <Suspense>
           <AuthProvider>

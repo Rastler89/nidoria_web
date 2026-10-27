@@ -10,11 +10,15 @@
  * Al cambiar el comportamiento del worker, subir CACHE_VERSION para invalidar
  * las cachés antiguas en los navegadores que ya lo tengan instalado.
  */
-const CACHE_VERSION = "nidoria-v1";
+const CACHE_VERSION = "nidoria-v2";
 const PRECACHE = `${CACHE_VERSION}-precache`;
 const PAGES = `${CACHE_VERSION}-pages`;
 const ASSETS = `${CACHE_VERSION}-assets`;
 const OFFLINE_URL = "/offline";
+
+// Límites para que las cachés no crezcan sin freno entre despliegues.
+const MAX_PAGES = 30;
+const MAX_ASSETS = 150;
 
 const PRECACHE_URLS = [
   OFFLINE_URL,
@@ -57,6 +61,8 @@ self.addEventListener("activate", (event) => {
       await Promise.all(
         names.filter((name) => !keep.has(name)).map((name) => caches.delete(name)),
       );
+      await trimCache(PAGES, MAX_PAGES);
+      await trimCache(ASSETS, MAX_ASSETS);
       await self.clients.claim();
     })(),
   );
@@ -95,6 +101,19 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(staleWhileRevalidate(request));
   }
 });
+
+/**
+ * Deja las `max` entradas más recientes de una caché. `cache.keys()` respeta el
+ * orden de inserción, así que se eliminan las más antiguas.
+ */
+async function trimCache(name, max) {
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  if (keys.length <= max) return;
+
+  const excess = keys.slice(0, keys.length - max);
+  await Promise.all(excess.map((request) => cache.delete(request)));
+}
 
 /**
  * Navegación: red primero para no servir HTML viejo; si falla, la última copia
