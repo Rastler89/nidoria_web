@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SocketProvider } from "@/context/SocketContext";
 import { Toaster } from "@/components/ui/toaster";
+import { SiteBanner } from "@/components/site-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable}`} suppressHydrationWarning>
       <body className="font-sans">
+        <SiteBanner />
         <Suspense>
           <AuthProvider>
             <SocketProvider>
