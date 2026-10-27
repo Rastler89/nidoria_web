@@ -24,20 +24,29 @@ interface Banner {
 const STORAGE_KEY = "nidoria_dismissed_banners"
 const EMPTY: string[] = []
 
-const VARIANTS: Record<BannerVariant, { container: string; icon: typeof Info; label: string }> = {
+const VARIANTS: Record<
+  BannerVariant,
+  { glow: string; icon: string; labelColor: string; iconComponent: typeof Info; label: string }
+> = {
   info: {
-    container: "bg-sky-700 text-sky-50 border-sky-500/40",
-    icon: Info,
+    glow: "from-primary/15",
+    icon: "text-primary",
+    labelColor: "text-primary",
+    iconComponent: Info,
     label: "Información",
   },
   warning: {
-    container: "bg-amber-500 text-amber-950 border-amber-300/50",
-    icon: AlertTriangle,
+    glow: "from-accent/15",
+    icon: "text-accent",
+    labelColor: "text-accent",
+    iconComponent: AlertTriangle,
     label: "Aviso",
   },
   danger: {
-    container: "bg-red-700 text-red-50 border-red-400/40",
-    icon: AlertOctagon,
+    glow: "from-destructive/20",
+    icon: "text-destructive",
+    labelColor: "text-destructive",
+    iconComponent: AlertOctagon,
     label: "Importante",
   },
 }
@@ -123,53 +132,57 @@ export function SiteBanner() {
   if (!banner) return null
 
   const variant = VARIANTS[(banner.variant as BannerVariant)] ?? VARIANTS.info
-  const Icon = variant.icon
+  const Icon = variant.iconComponent
 
   return (
     <div
       role="status"
       aria-live="polite"
       aria-label={variant.label}
-      className={cn(
-        "sticky top-0 z-[60] w-full border-b px-4 py-2.5 shadow-sm",
-        variant.container,
-      )}
+      className="relative w-full overflow-hidden border-b border-border bg-card/60 backdrop-blur-sm"
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-3">
-        <Icon className="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
-        <p className="min-w-0 flex-1 text-sm leading-snug">
-          <span className="sr-only">{variant.label}: </span>
-          {banner.message}
-        </p>
-        {banner.linkUrl ? (
-          <a
-            href={banner.linkUrl}
-            className="hidden shrink-0 items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold underline decoration-2 underline-offset-2 transition-opacity hover:opacity-80 sm:inline-flex"
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 bg-gradient-to-r via-transparent to-transparent",
+          variant.glow,
+        )}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+        aria-hidden="true"
+      />
+      <div className="relative mx-auto flex max-w-7xl items-start gap-3 px-4 py-2.5 sm:items-center sm:px-6 lg:px-8">
+        <Icon className={cn("mt-0.5 h-4 w-4 shrink-0 sm:mt-0", variant.icon)} aria-hidden="true" />
+        <p className="min-w-0 flex-1 text-sm leading-snug text-foreground/90">
+          <span
+            className={cn(
+              "mr-2 align-baseline text-[10px] font-bold uppercase tracking-[0.2em]",
+              variant.labelColor,
+            )}
           >
-            {banner.linkLabel || "Ver más"}
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
-        ) : null}
+            {variant.label}
+          </span>
+          {banner.message}
+          {banner.linkUrl ? (
+            <a
+              href={banner.linkUrl}
+              className="ml-2 inline-flex items-center gap-1 whitespace-nowrap font-medium text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+            >
+              {banner.linkLabel || "Ver más"}
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          ) : null}
+        </p>
         <button
           type="button"
           onClick={() => dismissBanner(bannerKey(banner))}
           aria-label="Cerrar aviso"
-          className="shrink-0 rounded-md p-1 transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current"
+          className="shrink-0 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      {banner.linkUrl ? (
-        <div className="mx-auto mt-1 max-w-7xl pl-7 sm:hidden">
-          <a
-            href={banner.linkUrl}
-            className="inline-flex items-center gap-1 text-xs font-semibold underline decoration-2 underline-offset-2"
-          >
-            {banner.linkLabel || "Ver más"}
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
-        </div>
-      ) : null}
     </div>
   )
 }
