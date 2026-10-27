@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      // El antiguo borrador de registro ahora vive en /register
+      { source: "/register/real", destination: "/register", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;
