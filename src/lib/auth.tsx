@@ -9,13 +9,19 @@ interface User {
   username: string
 }
 
+interface RegisterResult {
+  ok: boolean
+  error?: string
+  details?: string
+}
+
 interface AuthContextType {
   user: User | null
   token: string | null
   refreshToken?: string | null
   refresh: () => Promise<void>
   login: (email: string, password: string) => Promise<boolean>
-  register: (email: string, username: string, password: string) => Promise<boolean>
+  register: (email: string, username: string, password: string) => Promise<RegisterResult>
   logout: () => void
   loading: boolean
 }
@@ -78,9 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const register = async (email: string, username: string, password: string): Promise<boolean> => {
+  const register = async (email: string, username: string, password: string): Promise<RegisterResult> => {
     try {
-      // Simulate API call to your NestJS backend
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -89,22 +94,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, username, password }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        const { token: authToken, user: userData, refreshToken: refreshToken} = data
+      const data = await response.json().catch(() => ({}))
 
-        Cookies.set("auth_token", authToken, { expires: 7 })
-        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 })
-        Cookies.set("refresh_token", String(refreshToken), { expires: 7 })
-        setToken(authToken)
-        setUser(userData)
-        setRefreshToken(refreshToken)
-        return true
+      if (!response.ok) {
+        return {
+          ok: false,
+          error: data.error || "No se pudo completar el registro.",
+          details: data.details,
+        }
       }
-      return false
+
+      // El registro no inicia sesión: la cuenta debe verificarse por correo
+      // antes de poder entrar (el backend exige `verified`).
+      return { ok: true }
     } catch (error) {
       console.error("Register error:", error)
-      return false
+      return { ok: false, error: "Error de conexión con el servidor." }
     }
   }
 

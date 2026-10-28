@@ -13,7 +13,13 @@ import { toast } from "@/components/ui/use-toast"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+// Si la API responde con error (401, 500…) el cuerpo es { error } y no un
+// array: lanzamos para que SWR lo trate como error y `data` quede vacío.
+const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("No se pudieron cargar las unidades");
+    return res.json();
+};
 
 const formatTime = (seconds: number) => {
     if (!seconds) return "0s";
@@ -33,7 +39,10 @@ export default function UnidadesPage() {
     const [selectedUnit, setSelectedUnit] = useState<number | null>(null)
     const [quantities, setQuantities] = useState<{ [key: number]: number }>({})
     const { data: socketData } = useSocket()
-    const { data: availableUnits, mutate } = useSWR('/api/ants', fetcher)
+    const { data: availableUnits, mutate, error } = useSWR('/api/ants', fetcher)
+
+    // Mientras no haya datos (o si llegara un objeto de error) trabajamos con [].
+    const units = Array.isArray(availableUnits) ? availableUnits : []
 
     const handleQuantityChange = (antId: number, val: string) => {
         const num = parseInt(val) || 0;
@@ -51,7 +60,7 @@ export default function UnidadesPage() {
 
             if (!res.ok) {
                 const err = await res.json();
-                throw new Error(err.message || "Error al reclutar");
+                throw new Error(err.error || err.message || "Error al reclutar");
             }
 
             toast({
@@ -140,7 +149,12 @@ export default function UnidadesPage() {
                                     <CardDescription>Selecciona las unidades que deseas entrenar</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {availableUnits?.filter((u: any) => u.requirementsMet).map((u: any) => (
+                                    {error && (
+                                        <p className="text-sm text-destructive">
+                                            No se pudieron cargar las unidades. Vuelve a iniciar sesión o recarga la página.
+                                        </p>
+                                    )}
+                                    {units.filter((u: any) => u.requirementsMet).map((u: any) => (
                                         <div
                                             key={`unit-${u.ant.id}`}
                                             className={`tech-node p-6 cursor-pointer transition-all hover:bg-accent/5 ${selectedUnit === u.ant.id ? "ring-2 ring-primary bg-accent/10" : "bg-card/50"
@@ -231,7 +245,7 @@ export default function UnidadesPage() {
                                     <CardDescription>Requieren investigaciones avanzadas o edificios específicos</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {availableUnits?.filter((u: any) => !u.requirementsMet).map((u: any) => (
+                                    {units.filter((u: any) => !u.requirementsMet).map((u: any) => (
                                         <div key={`locked-${u.ant.id}`} className="tech-node locked p-6 bg-muted/20 border-dashed border-2 border-muted">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex-1">

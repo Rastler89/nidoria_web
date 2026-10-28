@@ -32,7 +32,7 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <Button size="lg" className="text-xl px-12 py-8 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow text-2xl w-full sm:w-auto" asChild>
-                <Link href="/register">Pre-regístrate ahora</Link>
+                <Link href="/register">Crea tu cuenta</Link>
               </Button>
               <Button size="lg" variant="outline" className="text-xl px-12 py-8 rounded-2xl border-primary/40 text-primary hover:bg-primary/10 text-2xl w-full sm:w-auto backdrop-blur-sm" asChild>
                 <Link href="/explore">Explorar el Mundo</Link>
@@ -49,7 +49,7 @@ export default function HomePage() {
                 <span className="founder-badge text-sm md:text-lg mb-4 block">Oferta de Lanzamiento</span>
                 <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Conviértete en Fundador</h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Pre-regístrate hoy y asegura estas ventajas exclusivas para el día 1. Ayúdanos a forjar la primera gran colonia.
+                  Únete hoy y asegura estas ventajas exclusivas desde el primer día. Ayúdanos a forjar la primera gran colonia.
                 </p>
               </div>
 

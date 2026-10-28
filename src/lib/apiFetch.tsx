@@ -19,7 +19,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
-    let currentOptions: RequestInit = {
+    const currentOptions: RequestInit = {
         ...options,
         body: options.body ? String(options.body) : undefined
     };

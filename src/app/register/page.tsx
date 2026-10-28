@@ -5,39 +5,90 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Navigation } from "@/components/ui/navigation"
 import { FormField } from "@/components/ui/form-field"
+import { useAuth } from "@/lib/auth"
+
+interface RegisterForm {
+  username: string
+  email: string
+  password: string
+  confirmPassword: string
+}
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("")
+  const [formData, setFormData] = useState<RegisterForm>({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { register } = useAuth()
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    const username = formData.username.trim()
+    const email = formData.email.trim()
+
+    if (!username) {
+      newErrors.username = "El nombre de jugador es requerido"
+    } else if (username.length < 3) {
+      newErrors.username = "Debe tener al menos 3 caracteres"
+    }
+
+    if (!email) {
+      newErrors.email = "El email es requerido"
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Introduce un email válido"
+    }
+
+    if (!formData.password) {
+      newErrors.password = "La contraseña es requerida"
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Debe tener al menos 6 caracteres"
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirma tu contraseña"
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Las contraseñas no coinciden"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const updateField = (field: keyof RegisterForm, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }))
+    if (errors.submit) setErrors((prev) => ({ ...prev, submit: "" }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (email) {
-      setIsSubmitting(true)
-      setError(null)
-      try {
-        const response = await fetch("/api/pre-register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+    setErrors({})
+    try {
+      const result = await register(
+        formData.email.trim(),
+        formData.username.trim(),
+        formData.password,
+      )
+
+      if (result.ok) {
+        setSubmitted(true)
+      } else {
+        setErrors({
+          submit: [result.error, result.details].filter(Boolean).join(" "),
         })
-
-        const data = await response.json()
-
-        if (response.ok) {
-          setSubmitted(true)
-        } else {
-          setError(data.error || "Ocurrió un error al procesar tu registro.")
-        }
-      } catch (err) {
-        setError("Error de conexión con el servidor.")
-      } finally {
-        setIsSubmitting(false)
       }
+    } catch (err) {
+      setErrors({ submit: "Error de conexión con el servidor." })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -49,11 +100,11 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Benefits Column */}
             <div className="hidden lg:block space-y-8 pr-8">
-              <span className="founder-badge text-lg">Beneficios Exclusivos</span>
-              <h2 className="text-4xl font-bold text-foreground">Únete como Fundador</h2>
+              <span className="founder-badge text-lg">Ventajas de Fundador</span>
+              <h2 className="text-4xl font-bold text-foreground">Funda tu Colonia</h2>
               <div className="space-y-6">
                 {[
-                  { title: "Acceso Anticipado", desc: "Explora Nidoria antes que nadie." },
+                  { title: "Acceso a la Beta", desc: "Juega desde el primer día y ayúdanos a pulir Nidoria." },
                   { title: "Emblema de Fundador", desc: "Presume tu estatus en tu perfil." },
                   { title: "Bonus de Recursos", desc: "Comienza con una ventaja estratégica." }
                 ].map((item, i) => (
@@ -83,26 +134,58 @@ export default function RegisterPage() {
                   <div className="lg:hidden flex justify-center mb-6">
                     <img src="/nidoria2.png" alt="Nidoria" className="w-40" />
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground text-center">Pre-regístrate</h1>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-4 text-foreground text-center">Crea tu cuenta</h1>
                   <p className="text-lg text-muted-foreground mb-8 text-center text-pretty">
-                    Asegura tu lugar en la historia de <span className="text-accent">Nidoria</span> y reclama tus recompensas de fundador.
+                    Funda tu colonia en <span className="text-accent">Nidoria</span> y despierta a tu reina.
                   </p>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="text-left">
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <FormField
+                      label="Nombre de jugador"
+                      placeholder="Tu nombre de líder"
+                      value={formData.username}
+                      onChange={(v) => updateField("username", v)}
+                      error={errors.username}
+                      required
+                      className="bg-muted/20 border-primary/30"
+                    />
+
+                    <FormField
+                      label="Correo Electrónico"
+                      type="email"
+                      placeholder="hormiga-reina@colonia.com"
+                      value={formData.email}
+                      onChange={(v) => updateField("email", v)}
+                      error={errors.email}
+                      required
+                      className="bg-muted/20 border-primary/30"
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                        label="Tu Correo Electrónico"
-                        type="email"
-                        placeholder="hormiga-reina@colonia.com"
-                        value={email}
-                        onChange={(v) => setEmail(v)}
+                        label="Contraseña"
+                        type="password"
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={(v) => updateField("password", v)}
+                        error={errors.password}
                         required
-                        className="bg-muted/20 border-primary/30 text-lg py-6"
+                        className="bg-muted/20 border-primary/30"
+                      />
+                      <FormField
+                        label="Confirmar contraseña"
+                        type="password"
+                        placeholder="••••••••"
+                        value={formData.confirmPassword}
+                        onChange={(v) => updateField("confirmPassword", v)}
+                        error={errors.confirmPassword}
+                        required
+                        className="bg-muted/20 border-primary/30"
                       />
                     </div>
 
-                    {error && (
+                    {errors.submit && (
                       <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center font-medium">
-                        {error}
+                        {errors.submit}
                       </div>
                     )}
 
@@ -111,12 +194,18 @@ export default function RegisterPage() {
                       disabled={isSubmitting}
                       className="w-full py-8 text-xl rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 amber-glow font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
                     >
-                      {isSubmitting ? "Preparando tu Colonia..." : "¡Quiero ser Fundador!"}
+                      {isSubmitting ? "Preparando tu Colonia..." : "Fundar Mi Colonia"}
                     </Button>
                   </form>
                   <p className="mt-6 text-xs text-center text-muted-foreground/60">
-                    Al unirte, aceptas ser contactado exclusivamente para noticias sobre el lanzamiento de Nidoria.
+                    Al crear tu cuenta recibirás un correo para verificar tu dirección.
                   </p>
+                  <div className="mt-4 text-center text-sm text-muted-foreground">
+                    ¿Ya tienes una colonia?{" "}
+                    <Link href="/login" className="text-accent hover:underline font-bold">
+                      Inicia sesión
+                    </Link>
+                  </div>
                 </>
               ) : (
                 <div className="py-8 text-center animate-in fade-in zoom-in duration-500">
@@ -127,12 +216,18 @@ export default function RegisterPage() {
                       </svg>
                     </div>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground text-glow">¡Bienvenida, Majestad!</h2>
-                  <p className="text-lg text-muted-foreground mb-10 text-pretty">
-                    Tu estatus de <span className="founder-badge">Fundador</span> ha sido reservado para <strong>{email}</strong>.
-                    Pronto recibirás noticias imperiales en tu cámara.
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground text-glow">¡Colonia fundada!</h2>
+                  <p className="text-lg text-muted-foreground mb-4 text-pretty">
+                    Hemos enviado un correo de verificación a <strong>{formData.email}</strong>.
+                  </p>
+                  <p className="text-muted-foreground mb-10 text-pretty">
+                    Ábrelo para despertar a tu reina y poder entrar al hormiguero.
+                    Si no lo ves, revisa la carpeta de spam.
                   </p>
                   <div className="space-y-4">
+                    <Button className="w-full py-6 text-xl rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90" asChild>
+                      <Link href="/login">Ir a iniciar sesión</Link>
+                    </Button>
                     <Button variant="outline" className="w-full py-6 text-xl rounded-2xl glass-card hover:bg-accent/10" asChild>
                       <Link href="/">Volver al Gran Hormiguero</Link>
                     </Button>
