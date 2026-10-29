@@ -1,5 +1,20 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+/**
+ * Origen público del frontend (el que ve el jugador). La API lo usa para
+ * armar el enlace de verificación del correo cuando no hay APP_URL.
+ */
+function resolveAppOrigin(request: NextRequest): string | undefined {
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim()
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim()
+
+  if (forwardedHost) {
+    return `${forwardedProto ?? "https"}://${forwardedHost}`
+  }
+
+  return request.nextUrl.origin
+}
+
 export async function POST(request: NextRequest) {
   try {
     let payload: { email?: string; username?: string; password?: string }
@@ -18,10 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Configuration error" }, { status: 500 })
     }
 
+    const appOrigin = resolveAppOrigin(request)
+
     const res = await fetch(`${dbHost}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(appOrigin ? { "x-app-origin": appOrigin } : {}),
       },
       body: JSON.stringify({ email, username, password }),
     })
