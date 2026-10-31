@@ -9,8 +9,12 @@
  *
  * Al cambiar el comportamiento del worker, subir CACHE_VERSION para invalidar
  * las cachés antiguas en los navegadores que ya lo tengan instalado.
+ *
+ * Las escrituras en caché se esperan dentro de la misma promesa que se pasa a
+ * `respondWith` y `waitUntil`: WebKit (iOS) mata el worker en cuanto termina el
+ * evento, así que un `cache.put` suelto se pierde y la app queda sin offline.
  */
-const CACHE_VERSION = "nidoria-v2";
+const CACHE_VERSION = "nidoria-v3";
 const PRECACHE = `${CACHE_VERSION}-precache`;
 const PAGES = `${CACHE_VERSION}-pages`;
 const ASSETS = `${CACHE_VERSION}-assets`;
@@ -85,7 +89,7 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname === "/sw.js") return;
 
   if (request.mode === "navigate") {
-    event.respondWith(handleNavigation(request));
+    handleNavigation(event);
     return;
   }
 
@@ -93,12 +97,12 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/_next/static/") ||
     url.pathname.startsWith("/icons/")
   ) {
-    event.respondWith(cacheFirst(request));
+    cacheFirst(event);
     return;
   }
 
   if (ASSET_DESTINATIONS.has(request.destination)) {
-    event.respondWith(staleWhileRevalidate(request));
+    staleWhileRevalidate(event);
   }
 });
 
@@ -119,61 +123,88 @@ async function trimCache(name, max) {
  * Navegación: red primero para no servir HTML viejo; si falla, la última copia
  * de esa URL y, en último término, la página offline precargada.
  */
-async function handleNavigation(request) {
-  try {
-    const response = await fetch(request);
-    if (response.ok && response.type === "basic") {
-      const cache = await caches.open(PAGES);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    const cached = await caches.match(request, { ignoreSearch: true });
-    if (cached) return cached;
+function handleNavigation(event) {
+  const { request } = event;
 
-    const offline = await caches.match(OFFLINE_URL);
-    if (offline) return offline;
-
-    return new Response("Sin conexión", {
-      status: 503,
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
-  }
-}
-
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-
-  try {
-    const response = await fetch(request);
-    if (response.ok && response.type === "basic") {
-      const cache = await caches.open(ASSETS);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    return new Response("", { status: 504, statusText: "Sin conexión" });
-  }
-}
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(ASSETS);
-  const cached = await cache.match(request);
-
-  const network = fetch(request)
-    .then((response) => {
+  const work = (async () => {
+    try {
+      const response = await fetch(request);
       if (response.ok && response.type === "basic") {
-        cache.put(request, response.clone());
+        const cache = await caches.open(PAGES);
+        // Se espera el `put` antes de devolver la respuesta: si se deja suelto,
+        // WebKit puede cerrar el worker y no guardar nunca la copia offline.
+        await cache.put(request, response.clone());
       }
       return response;
-    })
+    } catch {
+      const cached = await caches.match(request, { ignoreSearch: true });
+      if (cached) return cached;
+
+      const offline = await caches.match(OFFLINE_URL);
+      if (offline) return offline;
+
+      return new Response("Sin conexión", {
+        status: 503,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
+  })();
+
+  event.respondWith(work);
+  event.waitUntil(work.catch(() => undefined));
+}
+
+function cacheFirst(event) {
+  const { request } = event;
+
+  const work = (async () => {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+
+    try {
+      const response = await fetch(request);
+      if (response.ok && response.type === "basic") {
+        const cache = await caches.open(ASSETS);
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch {
+      return new Response("", { status: 504, statusText: "Sin conexión" });
+    }
+  })();
+
+  event.respondWith(work);
+  event.waitUntil(work.catch(() => undefined));
+}
+
+function staleWhileRevalidate(event) {
+  const { request } = event;
+
+  // Las promesas se crean de forma síncrona para poder pasárselas a
+  // `waitUntil` y que la actualización en segundo plano no se pierda en iOS.
+  const cacheReady = caches.open(ASSETS);
+  const network = cacheReady
+    .then((cache) =>
+      fetch(request).then(async (response) => {
+        if (response.ok && response.type === "basic") {
+          await cache.put(request, response.clone());
+        }
+        return response;
+      }),
+    )
     .catch(() => undefined);
 
-  if (cached) return cached;
+  const work = (async () => {
+    const cache = await cacheReady;
+    const cached = await cache.match(request);
+    if (cached) return cached;
 
-  const response = await network;
-  if (response) return response;
+    const response = await network;
+    if (response) return response;
 
-  return new Response("", { status: 504, statusText: "Sin conexión" });
+    return new Response("", { status: 504, statusText: "Sin conexión" });
+  })();
+
+  event.respondWith(work);
+  event.waitUntil(Promise.allSettled([work, network]));
 }

@@ -32,7 +32,9 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "Nidoria",
-    statusBarStyle: "black-translucent",
+    // "black-translucent" deja el contenido bajo la barra de estado y el
+    // layout no reserva ese espacio: en iPhone se comía la cabecera.
+    statusBarStyle: "default",
   },
   formatDetection: { telephone: false },
   other: {

@@ -77,9 +77,9 @@ La web es una PWA: se puede instalar desde el navegador y mantiene una copia de 
 
 - **`src/app/manifest.ts`** — manifiesto (`/manifest.webmanifest`): nombre, colores del tema e iconos.
 - **`public/icons/`** — iconos 192/512, *maskable* y `apple-touch-icon`, generados a partir de `public/nidoria2.png`.
-- **`public/sw.js`** — service worker. Navegaciones *network-first* con copia en caché y fallback a `/offline`; `/_next/static/` *cache-first*; imágenes y fuentes *stale-while-revalidate*. Nunca cachea `/api/` ni peticiones de otro origen, y recorta las cachés en cada activación para que no crezcan entre despliegues.
+- **`public/sw.js`** — service worker. Navegaciones *network-first* con copia en caché y fallback a `/offline`; `/_next/static/` *cache-first*; imágenes y fuentes *stale-while-revalidate*. Nunca cachea `/api/` ni peticiones de otro origen, y recorta las cachés en cada activación para que no crezcan entre despliegues. Las escrituras en caché se esperan dentro de `respondWith`/`waitUntil`: en iOS (WebKit) el worker se apaga al terminar el evento y un `cache.put` suelto se pierde.
 - **`src/components/pwa-register.tsx`** — registra el worker **solo en producción** (en `next dev` estorbaría al HMR), busca actualizaciones al volver a la pestaña y cada 30 minutos, y avisa con un toast cuando hay una versión nueva (recarga sola si la pestaña está en segundo plano).
-- **`src/components/pwa-install.tsx`** — botón flotante «Instalar Nidoria», visible solo cuando el navegador ofrece la instalación (`beforeinstallprompt`).
+- **`src/components/pwa-install.tsx`** — botón flotante «Instalar Nidoria». En Android/Chromium usa `beforeinstallprompt`. En iOS no existe instalación programática: abre una hoja con los pasos de Safari (Compartir → Añadir a pantalla de inicio). Si la web se abrió en Chrome/Edge/Firefox de iOS o dentro de una app (Instagram, WhatsApp, Gmail, TikTok…), avisa de que hay que pasarla a Safari y ofrece copiar el enlace. Al cerrar la invitación en iOS queda un botón compacto, porque es la única vía de instalación.
 - **`src/app/offline/page.tsx`** — página de respaldo sin conexión.
 
 Para probarlo hay que compilar y servir en producción (`npm run build && npm start`); en desarrollo el worker no se registra. Al cambiar la estrategia de caché de `public/sw.js`, subir `CACHE_VERSION` para invalidar las cachés antiguas.
