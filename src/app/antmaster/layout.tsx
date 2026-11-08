@@ -19,6 +19,7 @@ const navItems = [
     { href: "/antmaster/requirements", label: "Requerimientos", icon: "list-check" },
   ]},
   { section: "Social", items: [
+    { href: "/antmaster/banners", label: "Banners", icon: "bullhorn" },
     { href: "/antmaster/titles", label: "Títulos", icon: "medal" },
   ]},
   { section: "Mantenimiento", items: [
@@ -41,6 +42,7 @@ const iconMap: Record<string, string> = {
   "box": "📦",
   "list-check": "📋",
   "medal": "🏅",
+  "bullhorn": "📢",
   "wrench": "🔧",
   "chart-pie": "📊",
   "robot": "🤖",
