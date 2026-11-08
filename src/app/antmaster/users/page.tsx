@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { adminFetch } from "@/lib/admin-api"
+import { useAuth } from "@/lib/auth"
 
 interface User {
   id: number
@@ -9,34 +10,63 @@ interface User {
   email: string
   role: string
   verified: string | null
+  isActive: boolean
   createdAt: string
 }
 
 export default function UsersPage() {
+  const { user: currentUser } = useAuth()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const loadUsers = async () => {
     setLoading(true)
-    const data = await adminFetch("antmaster/api/users")
-    setUsers(Array.isArray(data) ? data : [])
-    setLoading(false)
+    setError(null)
+    try {
+      const data = await adminFetch("antmaster/api/users")
+      setUsers(Array.isArray(data) ? data : [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudieron cargar los usuarios.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { loadUsers() }, [])
 
   const updateRole = async (id: number, role: string) => {
-    await adminFetch(`antmaster/api/users/${id}/role`, {
-      method: "PATCH",
-      body: JSON.stringify({ role }),
-    })
-    loadUsers()
+    try {
+      await adminFetch(`antmaster/api/users/${id}/role`, {
+        method: "PATCH",
+        body: JSON.stringify({ role }),
+      })
+      await loadUsers()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo cambiar el rol.")
+    }
+  }
+
+  const toggleActive = async (id: number, isActive: boolean) => {
+    try {
+      await adminFetch(`antmaster/api/users/${id}/active`, {
+        method: "PATCH",
+        body: JSON.stringify({ isActive }),
+      })
+      await loadUsers()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo cambiar el acceso.")
+    }
   }
 
   const deleteUser = async (id: number) => {
     if (!confirm("¿Eliminar este usuario? Esta acción no se puede deshacer.")) return
-    await adminFetch(`antmaster/api/users/${id}`, { method: "DELETE" })
-    loadUsers()
+    try {
+      await adminFetch(`antmaster/api/users/${id}`, { method: "DELETE" })
+      await loadUsers()
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo eliminar el usuario.")
+    }
   }
 
   return (
@@ -51,6 +81,12 @@ export default function UsersPage() {
         </button>
       </div>
 
+      {error && (
+        <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-2xl px-5 py-4">
+          {error}
+        </div>
+      )}
+
       <div className="bg-gradient-to-b from-[#18181b]/80 to-[#09090b]/90 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -60,59 +96,86 @@ export default function UsersPage() {
                 <th className="px-8 py-5">Usuario</th>
                 <th className="px-8 py-5">Email</th>
                 <th className="px-8 py-5">Rol</th>
-                <th className="px-8 py-5">Estado</th>
+                <th className="px-8 py-5">Verificado</th>
+                <th className="px-8 py-5">Acceso</th>
                 <th className="px-8 py-5 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr><td colSpan={6} className="px-8 py-12 text-center text-zinc-500">Cargando...</td></tr>
+                <tr><td colSpan={7} className="px-8 py-12 text-center text-zinc-500">Cargando...</td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={6} className="px-8 py-12 text-center text-zinc-500">No hay usuarios</td></tr>
-              ) : users.map((user) => (
-                <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-8 py-4 text-zinc-400 font-mono text-sm">{user.id}</td>
-                  <td className="px-8 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
-                        {user.username.charAt(0).toUpperCase()}
+                <tr><td colSpan={7} className="px-8 py-12 text-center text-zinc-500">No hay usuarios</td></tr>
+              ) : users.map((user) => {
+                const isSelf = String(currentUser?.id) === String(user.id)
+                return (
+                  <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-8 py-4 text-zinc-400 font-mono text-sm">{user.id}</td>
+                    <td className="px-8 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-700/20 border border-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-white font-semibold">{user.username}</span>
                       </div>
-                      <span className="text-white font-semibold">{user.username}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-4 text-zinc-400 text-sm">{user.email}</td>
-                  <td className="px-8 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => updateRole(user.id, e.target.value)}
-                      className={`text-xs font-bold px-3 py-1.5 rounded-full border outline-none cursor-pointer ${
-                        user.role === "admin"
-                          ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
-                          : "bg-zinc-500/10 text-zinc-400 border-zinc-500/30"
-                      }`}
-                    >
-                      <option value="user" className="bg-zinc-900">user</option>
-                      <option value="admin" className="bg-zinc-900">admin</option>
-                      <option value="moderator" className="bg-zinc-900">moderator</option>
-                    </select>
-                  </td>
-                  <td className="px-8 py-4">
-                    {user.verified ? (
-                      <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/30">Verificado</span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-zinc-500 bg-zinc-500/10 px-2 py-1 rounded-full border border-zinc-500/30">Pendiente</span>
-                    )}
-                  </td>
-                  <td className="px-8 py-4 text-right">
-                    <button
-                      onClick={() => deleteUser(user.id)}
-                      className="text-red-400 hover:text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-8 py-4 text-zinc-400 text-sm">{user.email}</td>
+                    <td className="px-8 py-4">
+                      <select
+                        value={user.role}
+                        onChange={(e) => updateRole(user.id, e.target.value)}
+                        className={`text-xs font-bold px-3 py-1.5 rounded-full border outline-none cursor-pointer ${
+                          user.role === "admin"
+                            ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
+                            : "bg-zinc-500/10 text-zinc-400 border-zinc-500/30"
+                        }`}
+                      >
+                        <option value="user" className="bg-zinc-900">user</option>
+                        <option value="admin" className="bg-zinc-900">admin</option>
+                        <option value="moderator" className="bg-zinc-900">moderator</option>
+                      </select>
+                    </td>
+                    <td className="px-8 py-4">
+                      {user.verified ? (
+                        <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/30">Verificado</span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-zinc-500 bg-zinc-500/10 px-2 py-1 rounded-full border border-zinc-500/30">Pendiente</span>
+                      )}
+                    </td>
+                    <td className="px-8 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
+                          user.isActive
+                            ? "text-green-500 bg-green-500/10 border-green-500/30"
+                            : "text-red-400 bg-red-500/10 border-red-500/30"
+                        }`}>
+                          {user.isActive ? "Activo" : "Inactivo"}
+                        </span>
+                        <button
+                          onClick={() => toggleActive(user.id, !user.isActive)}
+                          disabled={isSelf}
+                          title={isSelf ? "No puedes cambiar tu propio acceso" : undefined}
+                          className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                            user.isActive
+                              ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              : "text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                          }`}
+                        >
+                          {user.isActive ? "Deshabilitar" : "Habilitar"}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-8 py-4 text-right">
+                      <button
+                        onClick={() => deleteUser(user.id)}
+                        className="text-red-400 hover:text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
