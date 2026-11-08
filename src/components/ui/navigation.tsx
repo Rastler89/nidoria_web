@@ -6,7 +6,7 @@ import { NidoriaIcon } from "./nidoria-icon"
 import { useAuth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { AccessibilityMenu } from "@/components/accessibility-menu"
-import { LogOut, Mail, Menu, User } from "lucide-react"
+import { LogOut, Mail, Menu, Settings, User } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +87,11 @@ export function Navigation() {
                             <span>{user.username}</span>
                           </Link>
                         </Button>
+                        {user.role === "admin" && (
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href="/antmaster">AntMaster</Link>
+                          </Button>
+                        )}
                         <Button variant="outline" size="sm" onClick={() => logout()}>
                           Cerrar sesión
                         </Button>
@@ -152,6 +157,14 @@ export function Navigation() {
                               Perfil
                             </Link>
                           </DropdownMenuItem>
+                          {user.role === "admin" && (
+                            <DropdownMenuItem asChild>
+                              <Link href="/antmaster">
+                                <Settings />
+                                AntMaster
+                              </Link>
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
                             onSelect={() => logout()}
                             className="text-destructive focus:text-destructive"
