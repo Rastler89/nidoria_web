@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { serverApiUrl } from "@/lib/api-server-host";
 
 export async function POST(request: NextRequest) {
     try {
         const { refresh_token } = await request.json();
 
-        const dbHost = process.env.DB_HOST;
-
-        const res = await fetch(dbHost+"/auth/refresh", {
+        const res = await fetch(serverApiUrl("auth/refresh"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { serverApiUrl } from "@/lib/api-server-host"
 
 // El banner es público: no requiere sesión, por eso no usamos `apiFetch`
 // (que exige refresh_token). Cualquier fallo devuelve lista vacía para que
@@ -6,10 +7,8 @@ import { NextResponse } from "next/server"
 export const dynamic = "force-dynamic"
 
 export async function GET() {
-    const dbHost = process.env.DB_HOST ?? "http://localhost:4000"
-
     try {
-        const res = await fetch(`${dbHost}/banner`, { cache: "no-store" })
+        const res = await fetch(serverApiUrl("banner"), { cache: "no-store" })
         if (!res.ok) {
             return NextResponse.json({ banners: [] })
         }

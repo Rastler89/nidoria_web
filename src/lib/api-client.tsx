@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { apiUrl } from "@/lib/api-host";
 
 /**
  * Central API client for Nidoria Frontend.
@@ -10,8 +11,6 @@ export const api = {
      * This internally wraps the fetch logic previously in apiFetch.
      */
     async request(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: any) {
-        const dbHost = (process.env.NEXT_PUBLIC_DB_HOST ?? '').replace(/\/+$/, '');
-
         // 1. Obtener tokens de las cookies
         const token = Cookies.get("auth_token");
         const refreshToken = Cookies.get("refresh_token");
@@ -30,7 +29,7 @@ export const api = {
             body: body !== undefined ? JSON.stringify(body) : undefined,
         };
 
-        let res = await fetch(`${dbHost}/${endpoint.replace(/^\/+/, '')}`, currentOptions);
+        let res = await fetch(apiUrl(endpoint), currentOptions);
 
         // 3. Si falla con 401, intentar refrescar
         if (res.status === 401 && refreshToken) {
@@ -38,7 +37,7 @@ export const api = {
 
             try {
                 // Intentamos el refresco contra tu API interna de Next o Nest directamente
-                const refreshRes = await fetch(`${dbHost}/auth/refresh`, {
+                const refreshRes = await fetch(apiUrl("auth/refresh"), {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ refresh_token: refreshToken }),
@@ -53,7 +52,7 @@ export const api = {
 
                     // 5. Reintento final con el nuevo token
                     headers.set("Authorization", `Bearer ${newToken}`);
-                    res = await fetch(`${dbHost}/${endpoint.replace(/^\/+/, '')}`, {
+                    res = await fetch(apiUrl(endpoint), {
                         ...currentOptions,
                         headers,
                     });

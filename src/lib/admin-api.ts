@@ -1,6 +1,5 @@
 import Cookies from "js-cookie"
-
-const DB_HOST = (process.env.NEXT_PUBLIC_DB_HOST || "http://127.0.0.1:4000").replace(/\/+$/, "")
+import { apiUrl } from "@/lib/api-host"
 
 export async function adminFetch(url: string, options: RequestInit = {}) {
   const token = Cookies.get("auth_token")
@@ -10,7 +9,7 @@ export async function adminFetch(url: string, options: RequestInit = {}) {
     headers.set("Content-Type", "application/json")
   }
 
-  const res = await fetch(`${DB_HOST}/${url.replace(/^\/+/, "")}`, { ...options, headers })
+  const res = await fetch(apiUrl(url), { ...options, headers })
 
   if (res.status === 401) {
     Cookies.remove("auth_token")

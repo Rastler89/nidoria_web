@@ -5,6 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/lib/auth';
 import { toast } from '@/components/ui/use-toast';
+import { getApiHost } from '@/lib/api-host';
 
 interface SocketState {
     socket: Socket | null;
@@ -19,7 +20,7 @@ const SocketContext = createContext<SocketState>({
 });
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-    const dbHost = process.env.NEXT_PUBLIC_DB_HOST || 'http://localhost:4000'
+    const dbHost = getApiHost()
     const { token, user } = useAuth();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [data, setData] = useState<any>(null);

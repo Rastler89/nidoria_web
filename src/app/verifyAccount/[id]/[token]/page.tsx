@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Navigation } from "@/components/ui/navigation"
+import { getServerApiHost, serverApiUrl } from "@/lib/api-server-host"
 
 export const dynamic = "force-dynamic"
 
@@ -9,16 +10,14 @@ interface VerifyAccountPageProps {
 }
 
 async function verifyAccount(id: string, token: string) {
-  const dbHost = process.env.DB_HOST
-
-  if (!dbHost) {
+  if (!getServerApiHost()) {
     console.error("DB_HOST is not defined in environment variables")
     return { ok: false, message: "Error de configuración del servidor." }
   }
 
   try {
     const res = await fetch(
-      `${dbHost}/verifyAccount/${encodeURIComponent(id)}/${encodeURIComponent(token)}`,
+      serverApiUrl(`verifyAccount/${encodeURIComponent(id)}/${encodeURIComponent(token)}`),
       { cache: "no-store" },
     )
     const body = await res.text()
