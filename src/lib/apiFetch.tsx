@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers'
+import { serverApiUrl } from '@/lib/api-server-host'
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
     const cookieStore = await cookies(); // Agregado await aquí para consistencia
     const refreshToken = cookieStore.get('refresh_token')?.value
 
-    const dbHost = process.env.DB_HOST;
     const local = process.env.NEXT_PUBLIC_API_URL;
 
     async function clearCookies() {
@@ -25,7 +25,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     };
 
     // Primer intento al servidor
-    let res = await fetch(`${dbHost}/${url}`, currentOptions);
+    let res = await fetch(serverApiUrl(url), currentOptions);
 
     if (res.status === 401) {
         // Intento de refrescar el token
@@ -47,7 +47,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
             currentOptions.headers = headers;
 
             // Re-intento tras refrescar el token
-            res = await fetch(`${dbHost}/${url}`, currentOptions);
+            res = await fetch(serverApiUrl(url), currentOptions);
 
             if (res.status === 401) {
                 await clearCookies();

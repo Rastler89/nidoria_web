@@ -13,6 +13,11 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_DB_HOST=${NEXT_PUBLIC_DB_HOST} \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+# Sin estos build args, el bundle del navegador apuntaría a localhost (o a
+# rutas relativas). Fallamos el build en vez de desplegar una web rota.
+RUN test -n "$NEXT_PUBLIC_DB_HOST" || (echo "ERROR: falta el build arg NEXT_PUBLIC_DB_HOST (ej. https://api.nidoria.org)" && exit 1)
+RUN test -n "$NEXT_PUBLIC_API_URL" || (echo "ERROR: falta el build arg NEXT_PUBLIC_API_URL (ej. https://nidoria.org)" && exit 1)
+
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 

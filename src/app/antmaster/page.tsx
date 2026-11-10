@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Cookies from "js-cookie"
+import { apiUrl } from "@/lib/api-host"
 
 interface Summary {
   userCount: number
@@ -13,11 +14,9 @@ interface QueueStats {
   [key: string]: { waiting: number; active: number; completed: number; failed: number; delayed: number }
 }
 
-const DB_HOST = process.env.NEXT_PUBLIC_DB_HOST || "http://127.0.0.1:4000"
-
 async function adminFetch(url: string) {
   const token = Cookies.get("auth_token")
-  const res = await fetch(`${DB_HOST}/${url}`, {
+  const res = await fetch(apiUrl(url), {
     headers: { Authorization: `Bearer ${token}` },
   })
   return res.json()

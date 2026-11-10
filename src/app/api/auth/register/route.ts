@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { getServerApiHost, serverApiUrl } from "@/lib/api-server-host"
 
 /**
  * Origen público del frontend (el que ve el jugador). La API lo usa para
@@ -26,16 +27,14 @@ export async function POST(request: NextRequest) {
 
     const { email, username, password } = payload
 
-    const dbHost = process.env.DB_HOST
-
-    if (!dbHost) {
+    if (!getServerApiHost()) {
       console.error("DB_HOST is not defined in environment variables")
       return NextResponse.json({ error: "Configuration error" }, { status: 500 })
     }
 
     const appOrigin = resolveAppOrigin(request)
 
-    const res = await fetch(`${dbHost}/auth/register`, {
+    const res = await fetch(serverApiUrl("auth/register"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

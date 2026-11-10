@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { adminFetch } from "@/lib/admin-api"
+import { apiUrl } from "@/lib/api-host"
 
 export default function QueuesPage() {
   const [queues, setQueues] = useState<any>(null)
@@ -24,7 +25,7 @@ export default function QueuesPage() {
 
       <div className="bg-gradient-to-b from-[#18181b]/80 to-[#09090b]/90 backdrop-blur-xl border border-white/5 rounded-3xl p-8">
         <iframe
-          src={`${process.env.NEXT_PUBLIC_DB_HOST || "http://127.0.0.1:4000"}/queues`}
+          src={apiUrl("queues")}
           className="w-full h-[600px] rounded-2xl border border-white/5 bg-white/5"
           title="Bull Board"
         />

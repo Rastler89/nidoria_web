@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import { adminFetch } from "@/lib/admin-api"
+import { getApiHost } from "@/lib/api-host"
 import { useSocket } from "@/context/SocketContext"
 
 interface BotStats {
@@ -169,7 +170,7 @@ export default function AiManagerPage() {
     setStarting(true)
 
     try {
-      const baseUrl = (process.env.NEXT_PUBLIC_DB_HOST || "http://127.0.0.1:4000").replace(/\/+$/, "")
+      const baseUrl = getApiHost()
       const payload = {
         baseUrl,
         iterations: Math.max(1, Number(form.iterations) || 1),
