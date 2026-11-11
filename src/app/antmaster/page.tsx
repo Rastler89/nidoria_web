@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Cookies from "js-cookie"
-import { apiUrl } from "@/lib/api-host"
+import { adminFetch } from "@/lib/admin-api"
 
 interface Summary {
   userCount: number
@@ -14,23 +13,16 @@ interface QueueStats {
   [key: string]: { waiting: number; active: number; completed: number; failed: number; delayed: number }
 }
 
-async function adminFetch(url: string) {
-  const token = Cookies.get("auth_token")
-  const res = await fetch(apiUrl(url), {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  return res.json()
-}
-
 export default function AntMasterDashboard() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [queues, setQueues] = useState<QueueStats | null>(null)
   const [health, setHealth] = useState<any>(null)
 
   useEffect(() => {
-    adminFetch("antmaster/api/summary").then(setSummary)
-    adminFetch("antmaster/api/queues-stats").then(setQueues)
-    adminFetch("antmaster/api/analysis/health").then(setHealth)
+    // Si una petición falla, la tarjeta se queda en "—": no rompemos la página.
+    adminFetch("antmaster/api/summary").then(setSummary).catch(() => undefined)
+    adminFetch("antmaster/api/queues-stats").then(setQueues).catch(() => undefined)
+    adminFetch("antmaster/api/analysis/health").then(setHealth).catch(() => undefined)
   }, [])
 
   return (
@@ -66,7 +58,7 @@ export default function AntMasterDashboard() {
             <span className="text-[10px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full border border-amber-500/20">Bull</span>
           </h3>
           <button
-            onClick={() => adminFetch("antmaster/api/queues-stats").then(setQueues)}
+            onClick={() => adminFetch("antmaster/api/queues-stats").then(setQueues).catch(() => undefined)}
             className="text-[10px] bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold px-5 py-2 rounded-full transition-all uppercase border border-amber-500/30"
           >
             Sincronizar

@@ -1,0 +1,135 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+vi.mock("js-cookie", () => ({
+  default: {
+    get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
+  },
+}));
+
+import Cookies from "js-cookie";
+import { adminFetch } from "./admin-api";
+
+const mockCookies = vi.mocked(Cookies);
+const DB_HOST = "http://localhost:4000";
+
+type GetImpl = (key: string) => string | undefined;
+function mockCookieGet(impl: GetImpl) {
+  mockCookies.get.mockImplementation(impl as unknown as () => {
+    [key: string]: string;
+  });
+}
+
+function jsonResponse(status: number, body: unknown) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => body,
+  } as Response;
+}
+
+describe("adminFetch (client-side)", () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.NEXT_PUBLIC_DB_HOST = DB_HOST;
+    Object.defineProperty(window, "location", {
+      value: { href: "/" },
+      writable: true,
+    });
+    global.fetch = fetchMock;
+  });
+
+  it("sends the Authorization header from the auth_token cookie", async () => {
+    mockCookieGet((key) => (key === "auth_token" ? "token-123" : undefined));
+    fetchMock.mockResolvedValue(jsonResponse(200, [{ id: 1 }]));
+
+    const result = await adminFetch("antmaster/api/users");
+
+    expect(result).toEqual([{ id: 1 }]);
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toBe(`${DB_HOST}/antmaster/api/users`);
+    const headers = options.headers as Headers;
+    expect(headers.get("Authorization")).toBe("Bearer token-123");
+  });
+
+  it("refreshes the token on 401 and retries instead of logging out", async () => {
+    mockCookieGet((key) => {
+      if (key === "auth_token") return "expired-token";
+      if (key === "refresh_token") return "refresh-xyz";
+      return undefined;
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(401, {}))
+      .mockResolvedValueOnce(jsonResponse(200, { token: "new-token" }))
+      .mockResolvedValueOnce(jsonResponse(200, [{ id: 1 }]));
+
+    const result = await adminFetch("antmaster/api/users");
+
+    expect(result).toEqual([{ id: 1 }]);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+
+    const refreshCall = fetchMock.mock.calls[1];
+    expect(refreshCall[0]).toBe("/api/auth/refresh");
+    expect(refreshCall[1].body).toBe(
+      JSON.stringify({ refresh_token: "refresh-xyz" }),
+    );
+
+    const retryHeaders = fetchMock.mock.calls[2][1].headers as Headers;
+    expect(retryHeaders.get("Authorization")).toBe("Bearer new-token");
+    expect(mockCookies.set).toHaveBeenCalledWith("auth_token", "new-token", {
+      expires: 7,
+    });
+    expect(window.location.href).toBe("/");
+  });
+
+  it("logs out when the refresh token is also rejected", async () => {
+    mockCookieGet((key) => {
+      if (key === "auth_token") return "expired-token";
+      if (key === "refresh_token") return "refresh-xyz";
+      return undefined;
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(401, {}))
+      .mockResolvedValueOnce(jsonResponse(401, {}));
+
+    await expect(adminFetch("antmaster/api/users")).rejects.toThrow(
+      "Unauthorized",
+    );
+
+    expect(mockCookies.remove).toHaveBeenCalledWith("auth_token");
+    expect(mockCookies.remove).toHaveBeenCalledWith("refresh_token");
+    expect(window.location.href).toBe("/login?error=session_expired");
+  });
+
+  it("logs out on 401 when there is no refresh token", async () => {
+    mockCookieGet((key) => (key === "auth_token" ? "expired-token" : undefined));
+    fetchMock.mockResolvedValueOnce(jsonResponse(401, {}));
+
+    await expect(adminFetch("antmaster/api/users")).rejects.toThrow(
+      "Unauthorized",
+    );
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(mockCookies.remove).toHaveBeenCalledWith("auth_token");
+    expect(window.location.href).toBe("/login?error=session_expired");
+  });
+
+  it("keeps the session when the error is not an auth error", async () => {
+    mockCookieGet((key) => (key === "auth_token" ? "token-123" : undefined));
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(500, { message: "Fallo interno" }),
+    );
+
+    await expect(adminFetch("antmaster/api/users")).rejects.toThrow(
+      "Fallo interno",
+    );
+
+    expect(mockCookies.remove).not.toHaveBeenCalled();
+    expect(window.location.href).toBe("/");
+  });
+});
