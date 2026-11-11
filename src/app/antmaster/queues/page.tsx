@@ -6,8 +6,11 @@ import { apiUrl } from "@/lib/api-host"
 
 export default function QueuesPage() {
   const [queues, setQueues] = useState<any>(null)
+  // La URL se resuelve tras montar: en SSR aún no existe el runtime-config.
+  const [bullBoardUrl, setBullBoardUrl] = useState("")
 
   useEffect(() => {
+    setBullBoardUrl(apiUrl("queues"))
     adminFetch("antmaster/api/queues-stats").then(setQueues)
   }, [])
 
@@ -25,7 +28,7 @@ export default function QueuesPage() {
 
       <div className="bg-gradient-to-b from-[#18181b]/80 to-[#09090b]/90 backdrop-blur-xl border border-white/5 rounded-3xl p-8">
         <iframe
-          src={apiUrl("queues")}
+          src={bullBoardUrl || "about:blank"}
           className="w-full h-[600px] rounded-2xl border border-white/5 bg-white/5"
           title="Bull Board"
         />

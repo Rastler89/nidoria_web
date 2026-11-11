@@ -27,12 +27,12 @@ No hay scripts de lint ni test todavía; TypeScript se valida con `npx tsc --noE
 
 ## Variables de entorno (`.env`)
 
-- `DB_HOST` — host de la API usado por los route handlers server-side (`src/lib/api-server-host.ts`).
-- `NEXT_PUBLIC_DB_HOST` — host de la API para el navegador (fetch cliente + Socket.IO). Se **hornea en build**: debe llegar como build arg (`src/lib/api-host.ts`).
-- `NEXT_PUBLIC_API_URL` — usado por el refresh server-side; también va como build arg.
+- `DB_HOST` — host de la API usado por los route handlers server-side (`src/lib/api-server-host.ts`) y publicado al navegador en runtime (`src/lib/api-host.ts`).
+- `NEXT_PUBLIC_DB_HOST` — fallback opcional de build para el navegador (fetch cliente + Socket.IO). Ya no es obligatorio.
+- `NEXT_PUBLIC_API_URL` — usado por el refresh server-side.
 - `LOGIN_ENABLED` — flag para habilitar/deshabilitar login.
 
-El `Dockerfile` falla el build si faltan los dos `NEXT_PUBLIC_*`. No hay fallback a `127.0.0.1` en producción: si el navegador pide a localhost, el build se hizo sin los args.
+La URL del navegador se resuelve en runtime: `docker-entrypoint.sh` genera `public/runtime-config.js` a partir de `DB_HOST` en cada arranque. Si el navegador pide a `127.0.0.1`, falta `DB_HOST` en el contenedor (o se está en desarrollo sin `.env`).
 
 ## Convenciones
 

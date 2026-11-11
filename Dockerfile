@@ -6,17 +6,13 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Las NEXT_PUBLIC_* se hornean en el bundle del navegador EN EL BUILD.
-# Dokploy las inyecta como build args (p. ej. https://api.tudominio.com).
+# La URL del navegador se resuelve en runtime con DB_HOST: el entrypoint
+# genera public/runtime-config.js al arrancar. Estos ARG quedan solo como
+# fallback opcional para builds que no usen el entrypoint.
 ARG NEXT_PUBLIC_DB_HOST
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_DB_HOST=${NEXT_PUBLIC_DB_HOST} \
     NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
-# Sin estos build args, el bundle del navegador apuntaría a localhost (o a
-# rutas relativas). Fallamos el build en vez de desplegar una web rota.
-RUN test -n "$NEXT_PUBLIC_DB_HOST" || (echo "ERROR: falta el build arg NEXT_PUBLIC_DB_HOST (ej. https://api.nidoria.org)" && exit 1)
-RUN test -n "$NEXT_PUBLIC_API_URL" || (echo "ERROR: falta el build arg NEXT_PUBLIC_API_URL (ej. https://nidoria.org)" && exit 1)
 
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
@@ -36,6 +32,11 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/public ./public
 
+# Publica DB_HOST al navegador en public/runtime-config.js en cada arranque.
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && chmod +x /app/docker-entrypoint.sh
+
 EXPOSE 3000
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["npm", "start"]

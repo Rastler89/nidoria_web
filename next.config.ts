@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
         ],
       },
+      {
+        // Lo genera docker-entrypoint.sh en cada arranque: no debe cachearse.
+        source: "/runtime-config.js",
+        headers: [
+          { key: "Cache-Control", value: "no-store, max-age=0, must-revalidate" },
+        ],
+      },
     ];
   },
   async redirects() {

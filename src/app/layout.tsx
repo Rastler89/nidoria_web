@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Crimson_Pro } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
@@ -68,6 +69,8 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable}`} suppressHydrationWarning>
       <body className="font-sans">
+        {/* Generado en runtime por docker-entrypoint.sh con DB_HOST. */}
+        <Script src="/runtime-config.js" strategy="beforeInteractive" />
         <PwaRegister />
         <PwaInstall />
         <SiteBanner />
