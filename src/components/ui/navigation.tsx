@@ -6,6 +6,7 @@ import { NidoriaIcon } from "./nidoria-icon"
 import { useAuth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { AccessibilityMenu } from "@/components/accessibility-menu"
+import { useSocket } from "@/context/SocketContext"
 import { LogOut, Mail, Menu, Settings, User } from "lucide-react"
 import {
   DropdownMenu,
@@ -22,6 +23,7 @@ const GAME_LINKS = [
   { href: "/dashboard/construcciones", label: "Construcciones" },
   { href: "/dashboard/investigaciones", label: "Investigaciones" },
   { href: "/dashboard/misiones", label: "Exploraciones" },
+  { href: "/dashboard/caza", label: "Caza" },
   { href: "/dashboard/unidades", label: "Unidades" },
   { href: "/dashboard/ranking", label: "Ranking" },
 ]
@@ -35,6 +37,7 @@ const PUBLIC_LINKS = [
 export function Navigation() {
   const pathname = usePathname()
   const { user, logout, loading } = useAuth()
+  const { reportUnread } = useSocket()
 
   const isActive = (path: string) => pathname === path
   const links = user ? GAME_LINKS : PUBLIC_LINKS
@@ -76,8 +79,13 @@ export function Navigation() {
                   user ? (
                     <>
                       <Button variant="ghost" size="icon" asChild title="Correos">
-                        <Link href="/dashboard/correos">
+                        <Link href="/dashboard/correos" className="relative">
                           <Mail className="h-5 w-5" />
+                          {reportUnread > 0 && (
+                            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-accent text-[10px] leading-4 text-center font-bold text-accent-foreground">
+                              {reportUnread > 9 ? "9+" : reportUnread}
+                            </span>
+                          )}
                         </Link>
                       </Button>
                       <div className="flex items-center gap-2 border-l pl-4 ml-2">
@@ -149,6 +157,11 @@ export function Navigation() {
                             <Link href="/dashboard/correos">
                               <Mail />
                               Correos
+                              {reportUnread > 0 && (
+                                <span className="ml-auto text-xs font-bold text-accent">
+                                  {reportUnread}
+                                </span>
+                              )}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>

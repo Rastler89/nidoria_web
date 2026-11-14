@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { ProtectedRoute } from "@/components/protected-route"
 import { Navigation } from "@/components/ui/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,7 +26,7 @@ export default function DashboardPage() {
               Centro de Comando
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Gestiona tu colonia de hormigas desde el corazón del hormiguero
+              Gestiona tu colonia de hormigas desde el corazÃ³n del hormiguero
             </p>
           </div>
 
@@ -45,7 +45,7 @@ export default function DashboardPage() {
                       <span className="font-bold text-primary">5</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>En Construcción:</span>
+                      <span>En ConstrucciÃ³n:</span>
                       <span className="font-bold text-accent">1</span>
                     </div>
                     <div className="flex justify-between">
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                 <CardHeader className="text-center">
                   <div className="text-6xl mb-4"><img src="/investigation-ant.png"/></div>
                   <CardTitle className="text-2xl gradient-text">Investigaciones</CardTitle>
-                  <CardDescription>Desarrolla tecnologías avanzadas para evolucionar tu especie</CardDescription>
+                  <CardDescription>Desarrolla tecnologÃ­as avanzadas para evolucionar tu especie</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {/*<div className="space-y-2 text-sm">
@@ -83,13 +83,13 @@ export default function DashboardPage() {
               </Card>
             </Link>
 
-            <Link href="/dashboard/ejercito">
+            <Link href="/dashboard/unidades">
               <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
                 <CardHeader className="text-center">
                   <div className="text-6xl mb-4"><img src="/special-ants.png"/></div>
-                  <CardTitle className="text-2xl gradient-text">Ejército</CardTitle>
+                  <CardTitle className="text-2xl gradient-text">Unidades</CardTitle>
                   <CardDescription>
-                    Entrena y gestiona diferentes tipos de soldados para defender y atacar
+                    Gestiona y entrena tus hormigas: soldados, obreras y unidades especiales.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 <CardHeader className="text-center">
                   <div className="text-6xl mb-4"><img src="/exploration-ant.png"/></div>
                   <CardTitle className="text-2xl gradient-text">Misiones</CardTitle>
-                  <CardDescription>Envía obreras a explotar recursos y explorar nuevos territorios</CardDescription>
+                  <CardDescription>EnvÃ­a obreras a explotar recursos y explorar nuevos territorios</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {/*<div className="space-y-2 text-sm">
@@ -136,15 +136,28 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </Link>
+
+            <Link href="/dashboard/caza">
+              <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
+                <CardHeader className="text-center">
+                  <div className="text-6xl mb-4"><img src="/exploration-ant.png" alt="Caza" /></div>
+                  <CardTitle className="text-2xl gradient-text">Caza</CardTitle>
+                  <CardDescription>
+                    Rastrea monstruos que aparecen en el mapa y envía una expedición por su botín
+                  </CardDescription>
+                </CardHeader>
+                <CardContent />
+              </Card>
+            </Link>
           </div>
 
           {/*<div className="mt-8">
             <Card className="game-panel">
               <CardHeader>
                 <CardTitle className="text-2xl gradient-text flex items-center gap-3">
-                  🗺️ Vista Rápida del Territorio
+                  ðŸ—ºï¸ Vista RÃ¡pida del Territorio
                 </CardTitle>
-                <CardDescription>Acceso rápido al mapa estratégico y operaciones exteriores</CardDescription>
+                <CardDescription>Acceso rÃ¡pido al mapa estratÃ©gico y operaciones exteriores</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -162,7 +175,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <Link href="/dashboard/mapa">
-                  <Button className="w-full interactive-button text-lg py-4">🌍 Abrir Mapa Estratégico Completo</Button>
+                  <Button className="w-full interactive-button text-lg py-4">ðŸŒ Abrir Mapa EstratÃ©gico Completo</Button>
                 </Link>
               </CardContent>
             </Card>
