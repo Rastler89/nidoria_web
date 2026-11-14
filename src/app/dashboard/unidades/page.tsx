@@ -129,7 +129,7 @@ export default function UnidadesPage() {
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h2 className="text-3xl font-bold gradient-text">⚔️ Unidades Militares</h2>
-                            <p className="text-muted-foreground">Gestiona el ejército de tu imperio</p>
+                            <p className="text-muted-foreground">Gestiona las unidades de tu imperio</p>
                         </div>
                         <Link href="/dashboard">
                             <Button variant="outline" className="bg-background">
@@ -274,12 +274,12 @@ export default function UnidadesPage() {
                             </Card>
                         </div>
 
-                        {/* Panel Lateral: Ejército Actual */}
+                        {/* Panel Lateral: Unidades actuales */}
                         <div className="space-y-6">
                             <Card className="game-panel sticky top-24">
                                 <CardHeader>
                                     <CardTitle className="text-xl flex items-center gap-2">
-                                        🚩 Ejército Actual
+                                        🚩 Unidades actuales
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">

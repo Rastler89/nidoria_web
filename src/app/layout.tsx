@@ -71,6 +71,7 @@ export default function RootLayout({
       <body className="font-sans">
         {/* Generado en runtime por docker-entrypoint.sh con DB_HOST. */}
         <Script src="/runtime-config.js" strategy="beforeInteractive" />
+        <Script src="https://nidoria.youtrack.cloud/static/simplified/form/form-entry.js?auto=false" strategy="afterInteractive" />
         <PwaRegister />
         <PwaInstall />
         <SiteBanner />
@@ -89,6 +90,14 @@ export default function RootLayout({
             </SocketProvider>
           </AuthProvider>
         </Suspense>
+        <div id="yt-feedback-root" style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999 }} />
+        <Script id="yt-feedback-init" strategy="afterInteractive">{`
+          (function initYT() {
+            var el = document.getElementById('yt-feedback-root');
+            if (!el || typeof window.YTFeedbackForm === 'undefined') { setTimeout(initYT, 500); return; }
+            window.YTFeedbackForm.renderFeedbackButton(el, { backendURL: 'https://nidoria.youtrack.cloud', formUUID: 'c978cc60-4bc3-4e71-8ed0-cb4746b9460d', theme: 'light', language: 'es' });
+          })();
+        `}</Script>
       </body>
     </html>
   );
