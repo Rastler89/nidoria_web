@@ -1,7 +1,7 @@
 // context/SocketContext.tsx
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/lib/auth';
 import { toast } from '@/components/ui/use-toast';
@@ -11,12 +11,18 @@ interface SocketState {
     socket: Socket | null;
     data: any | null; // Aquí guardaremos los recursos globales
     isConnected: boolean;
+    /** Reportes del buzón sin leer (badge de navegación). */
+    reportUnread: number;
+    /** Vuelve a pedir el contador de no leídos a la API. */
+    refreshReports: () => Promise<void>;
 }
 
 const SocketContext = createContext<SocketState>({
     socket: null,
     data: null,
-    isConnected: false
+    isConnected: false,
+    reportUnread: 0,
+    refreshReports: async () => { }
 });
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
@@ -25,6 +31,23 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [data, setData] = useState<any>(null);
     const [isConnected, setIsConnected] = useState(false);
+    const [reportUnread, setReportUnread] = useState(0);
+
+    const refreshReports = useCallback(async () => {
+        try {
+            const res = await fetch('/api/reports/unread-count');
+            if (!res.ok) return;
+            const payload = await res.json();
+            setReportUnread(Number(payload?.unread) || 0);
+        } catch {
+            // Silencioso: el badge no debe romper la navegación.
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!token) return;
+        refreshReports();
+    }, [token, refreshReports]);
 
     useEffect(() => {
         if (!token) return;
@@ -58,6 +81,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
             })
         });
 
+        newSocket.on('report_new', () => {
+            setReportUnread((prev) => prev + 1);
+            toast({
+                title: "Nuevo reporte",
+                description: "Tienes un reporte nuevo en el buzón.",
+            })
+        });
+
         newSocket.on('auth_error', (data) => {
             toast({
                 variant: "destructive",
@@ -81,7 +112,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     }, [token]);
 
     return (
-        <SocketContext.Provider value={{ socket, data, isConnected }}>
+        <SocketContext.Provider value={{ socket, data, isConnected, reportUnread, refreshReports }}>
             {children}
         </SocketContext.Provider>
     );

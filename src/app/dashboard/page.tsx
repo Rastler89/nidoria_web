@@ -136,6 +136,19 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </Link>
+
+            <Link href="/dashboard/caza">
+              <Card className="game-panel hover:scale-105 transition-transform cursor-pointer h-full">
+                <CardHeader className="text-center">
+                  <div className="text-6xl mb-4">⚔️</div>
+                  <CardTitle className="text-2xl gradient-text">Caza</CardTitle>
+                  <CardDescription>
+                    Rastrea monstruos que aparecen en el mapa y envía una expedición por su botín
+                  </CardDescription>
+                </CardHeader>
+                <CardContent />
+              </Card>
+            </Link>
           </div>
 
           {/*<div className="mt-8">
