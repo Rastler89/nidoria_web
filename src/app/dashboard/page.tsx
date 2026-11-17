@@ -5,17 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { get } from "http"
 import { Stats } from "@/components/stats"
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal"
 
 export default function DashboardPage() {
-  const { user, token, logout } = useAuth()
+  const { user } = useAuth()
 
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
         <Navigation />
+        <OnboardingModal />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Stats />
