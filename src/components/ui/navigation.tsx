@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { AccessibilityMenu } from "@/components/accessibility-menu"
 import { useSocket } from "@/context/SocketContext"
-import { LogOut, Mail, Menu, Settings, User } from "lucide-react"
+import { BookOpen, LogOut, Mail, Menu, Settings, User } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,6 +95,13 @@ export function Navigation() {
                             <span>{user.username}</span>
                           </Link>
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.dispatchEvent(new Event("open-onboarding"))}
+                        >
+                          Tutorial
+                        </Button>
                         {user.role === "admin" && (
                           <Button variant="outline" size="sm" asChild>
                             <Link href="/antmaster">AntMaster</Link>
@@ -163,6 +170,12 @@ export function Navigation() {
                                 </span>
                               )}
                             </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => window.dispatchEvent(new Event("open-onboarding"))}
+                          >
+                            <BookOpen />
+                            Ver tutorial
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href="/dashboard/perfil">
