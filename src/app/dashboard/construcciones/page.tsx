@@ -109,19 +109,21 @@ export default function ConstruccionesPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to upgrade");
+        const data = await res.json().catch(() => ({}));
+        const msg = Array.isArray(data?.message) ? data.message.join(', ') : (data?.message || 'No se pudo iniciar la construcción');
+        throw new Error(msg);
       }
 
       toast({
         title: "Construcción iniciada",
-        description: "La construcción se está mejorando.",
+        description: "La construcción se ha iniciado.",
       });
 
       mutate();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "No se pudo iniciar la mejora.",
+        description: error?.message || "No se pudo iniciar la construcción.",
         variant: "destructive"
       })
     }
