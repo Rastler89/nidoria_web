@@ -10,23 +10,27 @@ const STORAGE_KEY = "nidoria_onboarding_v1_done"
 const STEPS = [
   {
     title: "Bienvenido a tu colonia",
-    body: "En el Centro de Comando verás tus recursos (arriba) y las secciones principales. Aquí empieza todo: construir, investigar, enviar misiones y hacer Caza.",
+    body: "En el Centro de Comando ves tus recursos arriba y las secciones principales. Desde aqui construyes, investigas, envias expediciones y haces Caza para hacer crecer tu hormiguero.",
+  },
+  {
+    title: "Recursos: para que sirve cada uno",
+    body: "Comida: se usa para que la reina ponga huevos (cuesta 40 de comida por huevo) y para mantener a tu colonia. Madera: se usa principalmente para construir y mejorar estructuras. Hojas: se usan en ciertas construcciones e investigaciones para avanzar. Recolecta enviando obreras a Expediciones.",
+  },
+  {
+    title: "Ciclo de la reina y tiempos",
+    body: "La reina pone huevos de forma periodica (cada poco tiempo) gastando comida. Un huevo tarda aproximadamente 1.5 minutos en convertirse en larva. Una larva tarda aproximadamente 2 minutos en convertirse en obrera. Gestiona bien la comida para no parar la produccion.",
   },
   {
     title: "Construcciones e Investigaciones",
-    body: "En Construcciones mejoras estructuras de la colonia. En Investigaciones desbloqueas tecnologías que cambian tu producción y tus unidades.",
+    body: "En Construcciones mejoras estructuras (ej. hormiguero, almacenamiento). En Investigaciones desbloqueas mejoras que aumentan produccion, capacidad o desbloquean opciones. Revisa requisitos antes de empezar.",
   },
   {
-    title: "Unidades y Misiones",
-    body: "En Unidades gestionas tus hormigas (soldados, obreras, especiales). En Misiones/Exploraciones envías obreras a conseguir recursos con el tiempo.",
+    title: "Expediciones y Unidades",
+    body: "En Expediciones (Misiones) asignas obreras a recolectar Comida, Madera u Hojas; tardan un tiempo y luego regresan con recursos. En Unidades ves y gestionas tus hormigas (obreras, soldados, etc.). Puedes cancelar una expedicion para recuperar las obreras.",
   },
   {
-    title: "Caza y Buzón",
-    body: "En Caza encuentras monstruos en el mapa, envías una expedición y esperas el viaje: el resultado llega como reporte al Buzón (Correos). Revísalo para ver botín y detalles del combate.",
-  },
-  {
-    title: "Consejo rápido",
-    body: "Si algo no queda claro, usa el enlace a la Wiki o explora con calma. Esta beta cambia a menudo: tus reportes ayudan mucho. ¡Buena suerte con tu hormiguero!",
+    title: "Caza, reportes y consejos",
+    body: "En Caza buscas monstruos, envias una expedicion y esperas el resultado en el Buzon (Correos). Si algo falla (ej. construccion), lee el mensaje de error: suele decir que falta recurso o requisito. Usa la Wiki si necesitas mas ayuda. Buena suerte.",
   },
 ]
 
@@ -83,7 +87,7 @@ export function OnboardingModal() {
       <Card className="game-panel w-full max-w-lg border-primary/30 shadow-xl">
         <CardHeader>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Tutorial rápido · paso {step + 1} de {STEPS.length}
+            Tutorial rapido - paso {step + 1} de {STEPS.length}
           </p>
           <CardTitle className="text-2xl gradient-text">{STEPS[step].title}</CardTitle>
           <CardDescription className="text-base leading-relaxed text-foreground/90">
@@ -103,7 +107,7 @@ export function OnboardingModal() {
           <div className="flex gap-2">
             {step > 0 && (
               <Button type="button" variant="outline" onClick={() => setStep((s) => s - 1)}>
-                Atrás
+                Atras
               </Button>
             )}
             <Button
