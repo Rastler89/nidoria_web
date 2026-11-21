@@ -16,6 +16,7 @@ const navItems = [
     { href: "/antmaster/investigations", label: "Investigaciones", icon: "flask" },
     { href: "/antmaster/ants", label: "Tipos Hormigas", icon: "bug" },
     { href: "/antmaster/resources", label: "Recursos", icon: "box" },
+    { href: "/antmaster/missions", label: "Misiones", icon: "target" },
     { href: "/antmaster/requirements", label: "Requerimientos", icon: "list-check" },
   ]},
   { section: "Social", items: [
