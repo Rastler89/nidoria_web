@@ -107,6 +107,7 @@ export default function AntmasterMissionsPage() {
             <option value="HAVE_WOOD_STOCK">Tener X madera (stock)</option>
             <option value="HAVE_LEAD_STOCK">Tener X hojas (stock)</option>
             <option value="HAVE_CONSTRUCTIONS_COMPLETED">Tener X construcciones completadas</option>
+            <option value="HAVE_ANY_EXPLORATION_ACTIVE">Tener al menos 1 expedicion activa</option>
           </select>
         </div>
         <div>
