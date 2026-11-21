@@ -23,6 +23,7 @@ const GAME_LINKS = [
   { href: "/dashboard/construcciones", label: "Construcciones" },
   { href: "/dashboard/investigaciones", label: "Investigaciones" },
   { href: "/dashboard/misiones", label: "Exploraciones" },
+  { href: "/dashboard/retos", label: "Retos" },
   { href: "/dashboard/caza", label: "Caza" },
   { href: "/dashboard/unidades", label: "Unidades" },
   { href: "/dashboard/ranking", label: "Ranking" },
