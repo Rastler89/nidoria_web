@@ -26,7 +26,7 @@ export default function DashboardPage() {
               Centro de Comando
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Gestiona tu colonia de hormigas desde el corazÃ³n del hormiguero
+              Gestiona tu colonia de hormigas desde el corazón del hormiguero
             </p>
           </div>
 
