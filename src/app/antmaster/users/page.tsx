@@ -69,6 +69,24 @@ export default function UsersPage() {
     }
   }
 
+  const setResource = async (userId: number) => {
+    const type = prompt("Tipo de recurso (FOOD, WOOD, LEAD):", "FOOD");
+    if (!type) return;
+    const stockStr = prompt("Nuevo stock (numero):", "0");
+    if (stockStr === null) return;
+    const stock = Number(stockStr);
+    if (Number.isNaN(stock)) { alert("Numero invalido"); return; }
+    try {
+      await adminFetch(ntmaster/api/users//resources, {
+        method: "PATCH",
+        body: JSON.stringify({ resourceType: type.toUpperCase(), stock }),
+      });
+      alert("Recurso actualizado.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error al actualizar recurso.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -165,7 +183,13 @@ export default function UsersPage() {
                         </button>
                       </div>
                     </td>
-                    <td className="px-8 py-4 text-right">
+                    <td className="px-8 py-4 text-right space-x-2">
+                      <button
+                        onClick={() => setResource(user.id)}
+                        className="text-amber-400 hover:text-amber-300 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition-colors"
+                      >
+                        Recursos
+                      </button>
                       <button
                         onClick={() => deleteUser(user.id)}
                         className="text-red-400 hover:text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
